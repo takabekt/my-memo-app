@@ -3,7 +3,7 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 //Firebaseの設定と準備を一か所にまとめたファイル
-
+console.log("API KEY:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
 // Firebaseの設定（.env.local から読み込む）
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
