@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { TextField, Button, Box } from "@mui/material";
+import { TextField, Button, Box, MenuItem } from "@mui/material";
 
 export default function MemoForm() {
   // 各formの入力値を管理
@@ -30,11 +32,9 @@ export default function MemoForm() {
     阪神: { 芝: [1200, 1400, 1600, 1800, 2000, 2200, 2400], ダート: [1200, 1400, 1800, 2000] },
     小倉: { 芝: [1200, 1700, 1800, 2000], ダート: [1000, 1700] },
   };
-
   // 選べる距離を選択
   const availableDistances =
     racecourse && surface ? distanceData[racecourse]?.[surface] ?? [] : [];
-
   // 保存ボタン押下時の処理
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,49 +53,187 @@ export default function MemoForm() {
       weight,
       horseWeight,
     });
-    // 明日ここにFirestore保存処理を作成
   };
-
+    // 明日ここにFirestore保存処理を作成
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
-      <TextField label="レース名" fullWidth margin="normal" value={raceName} onChange={(e) => setRaceName(e.target.value)} />
-      <TextField label="日付" type="date" fullWidth margin="normal" InputLabelProps={{ shrink: true }} value={date} onChange={(e) => setDate(e.target.value)} />
-      <TextField label="順位" type="number" inputProps={{ min: 1, max: 18 }} fullWidth margin="normal" value={rank} onChange={(e) => setRank(e.target.value)} />
-      <TextField select label="競馬場" fullWidth margin="normal" value={racecourse} onChange={(e) => { setRacecourse(e.target.value); setDistance(""); }} SelectProps={{ native: true }}>
-        <option value=""></option>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      noValidate
+      sx={{ mt: 4, maxWidth: 600, mx: "auto" }}
+    >
+      <TextField
+        label="レース名"
+        fullWidth
+        margin="normal"
+        value={raceName}
+        onChange={(e) => setRaceName(e.target.value)}
+      />
+
+      <TextField
+        label="日付"
+        type="date"
+        fullWidth
+        margin="normal"
+        InputLabelProps={{ shrink: true }}
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+      />
+
+      <TextField
+        label="順位"
+        type="number"
+        inputProps={{ min: 1, max: 18 }}
+        fullWidth
+        margin="normal"
+        value={rank}
+        onChange={(e) => setRank(e.target.value)}
+      />
+
+      {/* 競馬場 */}
+      <TextField
+        select
+        label="競馬場"
+        fullWidth
+        margin="normal"
+        value={racecourse}
+        onChange={(e) => {
+          setRacecourse(e.target.value);
+          setDistance("");
+        }}
+      >
+        <MenuItem value="">
+          <em>選択してください</em>
+        </MenuItem>
         {Object.keys(distanceData).map((name) => (
-          <option key={name} value={name}>{name}</option>
+          <MenuItem key={name} value={name}>
+            {name}
+          </MenuItem>
         ))}
       </TextField>
-      <TextField select label="馬場タイプ" fullWidth margin="normal" value={surface} onChange={(e) => { setSurface(e.target.value); setDistance(""); }} SelectProps={{ native: true }}>
-        <option value=""></option>
-        <option value="芝">芝</option>
-        <option value="ダート">ダート</option>
+
+      {/* 馬場タイプ */}
+      <TextField
+        select
+        label="馬場タイプ"
+        fullWidth
+        margin="normal"
+        value={surface}
+        onChange={(e) => {
+          setSurface(e.target.value);
+          setDistance("");
+        }}
+      >
+        <MenuItem value="">
+          <em>選択してください</em>
+        </MenuItem>
+        <MenuItem value="芝">芝</MenuItem>
+        <MenuItem value="ダート">ダート</MenuItem>
       </TextField>
-      <TextField select label="コース方向" fullWidth margin="normal" value={courseDirection} onChange={(e) => setCourseDirection(e.target.value)} SelectProps={{ native: true }}>
-        <option value=""></option>
-        <option value="右回り">右回り</option>
-        <option value="左回り">左回り</option>
+
+      {/* コース方向 */}
+      <TextField
+        select
+        label="コース方向"
+        fullWidth
+        margin="normal"
+        value={courseDirection}
+        onChange={(e) => setCourseDirection(e.target.value)}
+      >
+        <MenuItem value="">
+          <em>選択してください</em>
+        </MenuItem>
+        <MenuItem value="右回り">右回り</MenuItem>
+        <MenuItem value="左回り">左回り</MenuItem>
       </TextField>
-      <TextField select label="距離（m）" fullWidth margin="normal" value={distance} onChange={(e) => setDistance(e.target.value)} SelectProps={{ native: true }} disabled={!racecourse || !surface}>
-        <option value=""></option>
-        {availableDistances.map((d: number) => (
-          <option key={d} value={d}>{d}</option>
+
+      {/* 距離 */}
+      <TextField
+        select
+        label="距離（m）"
+        fullWidth
+        margin="normal"
+        value={distance}
+        onChange={(e) => setDistance(e.target.value)}
+        disabled={!racecourse || !surface}
+      >
+        <MenuItem value="">
+          <em>選択してください</em>
+        </MenuItem>
+        {availableDistances.map((d) => (
+          <MenuItem key={d} value={d}>
+            {d}
+          </MenuItem>
         ))}
       </TextField>
-      <TextField select label="馬場状態" fullWidth margin="normal" value={trackCondition} onChange={(e) => setTrackCondition(e.target.value)} SelectProps={{ native: true }}>
-        <option value=""></option>
-        <option value="良">良</option>
-        <option value="稍重">稍重</option>
-        <option value="重">重</option>
-        <option value="不良">不良</option>
+
+      {/* 馬場状態 */}
+      <TextField
+        select
+        label="馬場状態"
+        fullWidth
+        margin="normal"
+        value={trackCondition}
+        onChange={(e) => setTrackCondition(e.target.value)}
+      >
+        <MenuItem value="">
+          <em>選択してください</em>
+        </MenuItem>
+        <MenuItem value="良">良</MenuItem>
+        <MenuItem value="稍重">稍重</MenuItem>
+        <MenuItem value="重">重</MenuItem>
+        <MenuItem value="不良">不良</MenuItem>
       </TextField>
-      <TextField label="馬番" type="number" inputProps={{ min: 1, max: 18 }} fullWidth margin="normal" value={horseNumber} onChange={(e) => setHorseNumber(e.target.value)} />
-      <TextField label="騎手" fullWidth margin="normal" value={jockey} onChange={(e) => setJockey(e.target.value)} />
-      <TextField label="斤量（kg）" type="number" fullWidth margin="normal" value={weight} onChange={(e) => setWeight(e.target.value)} />
-      <TextField label="馬体重（kg）" type="number" fullWidth margin="normal" value={horseWeight} onChange={(e) => setHorseWeight(e.target.value)} />
-      <TextField label="回顧" fullWidth multiline rows={4} margin="normal" value={review} onChange={(e) => setReview(e.target.value)} />
-      <Button type="submit" variant="contained" sx={{ mt: 2 }}>保存</Button>
+
+      <TextField
+        label="馬番"
+        type="number"
+        inputProps={{ min: 1, max: 18 }}
+        fullWidth
+        margin="normal"
+        value={horseNumber}
+        onChange={(e) => setHorseNumber(e.target.value)}
+      />
+
+      <TextField
+        label="騎手"
+        fullWidth
+        margin="normal"
+        value={jockey}
+        onChange={(e) => setJockey(e.target.value)}
+      />
+
+      <TextField
+        label="斤量（kg）"
+        type="number"
+        fullWidth
+        margin="normal"
+        value={weight}
+        onChange={(e) => setWeight(e.target.value)}
+      />
+
+      <TextField
+        label="馬体重（kg）"
+        type="number"
+        fullWidth
+        margin="normal"
+        value={horseWeight}
+        onChange={(e) => setHorseWeight(e.target.value)}
+      />
+
+      <TextField
+        label="回顧"
+        fullWidth
+        multiline
+        rows={4}
+        margin="normal"
+        value={review}
+        onChange={(e) => setReview(e.target.value)}
+      />
+
+      <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+        保存
+      </Button>
     </Box>
   );
 }

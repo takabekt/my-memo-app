@@ -1,35 +1,28 @@
-import type { AppProps } from "next/app";
-import { useEffect, useState } from "react";
+"use client";
+
+import { useEffect } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
-export default function MyApp({ Component, pageProps }: AppProps) {
-  // ログインしているユーザー情報を user に保存
-  const [user, setUser] = useState<User | null>(null);
-
+export default function ClientAuthProvider() {
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       console.log("ログイン状態:", currentUser);
-      // Firestoreに保存
+
       if (currentUser) {
-        saveUserIfNew(currentUser);
+        await saveUserIfNew(currentUser);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Firestoreに保存
   const saveUserIfNew = async (user: User) => {
-    // Firestoreの保存先を指定
     const userRef = doc(db, "users", user.uid);
-    // ユーザーが既に保存されているかチェック
     const userSnap = await getDoc(userRef);
 
-    // 未保存であれば、新規で保存
     if (!userSnap.exists()) {
       await setDoc(userRef, {
         name: user.displayName,
@@ -43,5 +36,5 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     }
   };
 
-  return <Component {...pageProps} />;
+  return null;
 }
