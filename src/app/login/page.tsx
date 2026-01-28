@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Typography, Box, Container } from "@mui/material";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase";  
