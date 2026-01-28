@@ -1,8 +1,9 @@
 import { Button, Typography, Box, Container } from "@mui/material";
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../firebase";
+import { auth, provider } from "../../firebase";  
 import { FcGoogle } from "react-icons/fc";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";       
+
 
 // Googleログイン画面
 
@@ -31,7 +32,7 @@ export default function LoginPage() {
         textAlign="center"
       >
         <Typography variant="h4" gutterBottom>
-          📝 My Memo App
+          📝🏇 競馬メモ
         </Typography>
         <Typography variant="subtitle1" gutterBottom>
           ログインしてはじめよう
