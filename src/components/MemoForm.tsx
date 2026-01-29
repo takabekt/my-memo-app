@@ -51,7 +51,8 @@ export default function MemoForm() {
   }
 
   try {
-    await addDoc(collection(db, "users", user.uid, "memos"), {
+    // ユーザーごとにメモを設定
+    await addDoc(collection(db, "users", user.uid, "raceReviews"), {
       raceName,
       date,
       rank,
