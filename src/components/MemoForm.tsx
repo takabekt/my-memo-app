@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { TextField, Button, Box, MenuItem } from "@mui/material";
+import { collection, addDoc } from "firebase/firestore";
+import { db, auth } from "../firebase";
+
 
 export default function MemoForm() {
   // 各formの入力値を管理
@@ -36,9 +39,19 @@ export default function MemoForm() {
   const availableDistances =
     racecourse && surface ? distanceData[racecourse]?.[surface] ?? [] : [];
   // 保存ボタン押下時の処理
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // uidを取得
+  // uid = Firebase Authentication がユーザーごとに自動で発行する「唯一のID」
+  const user = auth.currentUser;
+  if (!user) {
+    console.error("ログインしていません");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "users", user.uid, "memos"), {
       raceName,
       date,
       rank,
@@ -52,9 +65,31 @@ export default function MemoForm() {
       jockey,
       weight,
       horseWeight,
+      createdAt: new Date(),
     });
-  };
-    // 明日ここにFirestore保存処理を作成
+
+    // 保存後にフォームをクリア
+    setRaceName("");
+    setDate("");
+    setRank("");
+    setReview("");
+    setRacecourse("");
+    setCourseDirection("");
+    setSurface("");
+    setDistance("");
+    setTrackCondition("");
+    setHorseNumber("");
+    setJockey("");
+    setWeight("");
+    setHorseWeight("");
+
+    console.log("保存完了");
+  } catch (error) {
+    console.error("保存エラー:", error);
+  }
+};
+
+    
   return (
     <Box
       component="form"
