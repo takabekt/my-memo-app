@@ -1,12 +1,19 @@
+import Link from "next/link";
+import MemoList from "./MemoList";
 import AuthGuard from "../../components/AuthGuard";
-import MemoForm from "../../components/MemoForm";
-
 
 export default function MyPage() {
   return (
     <AuthGuard>
-      {"入力フォーム"}
-      <MemoForm />
+      <h1>レース回顧一覧</h1>
+
+      <MemoList />
+
+      <div style={{ marginTop: "2rem" }}>
+        <Link href="/mypage/new">
+          <button>＋ 新規追加</button>
+        </Link>
+      </div>
     </AuthGuard>
   );
 }

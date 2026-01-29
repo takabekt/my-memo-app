@@ -4,15 +4,18 @@ import { useState } from "react";
 import { TextField, Button, Box, MenuItem } from "@mui/material";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 
 export default function MemoForm() {
+  const router = useRouter();
   // 各formの入力値を管理
   const [raceName, setRaceName] = useState("");
   const [date, setDate] = useState("");
   const [rank, setRank] = useState("");
   const [review, setReview] = useState("");
-  const [racecourse, setRacecourse] = useState("");
+  const [raceCourse, setRaceCourse] = useState("");
   const [courseDirection, setCourseDirection] = useState("");
   const [surface, setSurface] = useState("");
   const [distance, setDistance] = useState("");
@@ -21,6 +24,9 @@ export default function MemoForm() {
   const [jockey, setJockey] = useState("");
   const [weight, setWeight] = useState("");
   const [horseWeight, setHorseWeight] = useState("");
+
+  // 項目の入力状態を管理
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
 
   // 競馬場ごとに「芝」「ダート」の距離一覧を持つ
   const distanceData: Record<string, Record<string, number[]>> = {
@@ -37,10 +43,35 @@ export default function MemoForm() {
   };
   // 選べる距離を選択
   const availableDistances =
-    racecourse && surface ? distanceData[racecourse]?.[surface] ?? [] : [];
+    raceCourse && surface ? distanceData[raceCourse]?.[surface] ?? [] : [];
   // 保存ボタン押下時の処理
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
+  // 必須チェック
+  const newErrors = {
+    raceName: !raceName,
+    date: !date,
+    rank: !rank,
+    review: !review,
+    raceCourse: !raceCourse,
+    courseDirection: !courseDirection,
+    surface: !surface,
+    distance: !distance,
+    trackCondition: !trackCondition,
+    horseNumber: !horseNumber,
+    jockey: !jockey,
+    weight: !weight,
+    horseWeight: !horseWeight,
+  };
+
+  setErrors(newErrors);
+
+  // 1つでも true があればエラー
+  if (Object.values(newErrors).includes(true)) {
+    alert("未入力の項目があります");
+    return;
+  }
+
 
   // uidを取得
   // uid = Firebase Authentication がユーザーごとに自動で発行する「唯一のID」
@@ -52,12 +83,13 @@ export default function MemoForm() {
 
   try {
     // ユーザーごとにメモを設定
+    // uidと自動IDをもとにメモを保存
     await addDoc(collection(db, "users", user.uid, "raceReviews"), {
       raceName,
       date,
       rank,
       review,
-      racecourse,
+      raceCourse,
       courseDirection,
       surface,
       distance,
@@ -74,7 +106,7 @@ export default function MemoForm() {
     setDate("");
     setRank("");
     setReview("");
-    setRacecourse("");
+    setRaceCourse("");
     setCourseDirection("");
     setSurface("");
     setDistance("");
@@ -85,12 +117,13 @@ export default function MemoForm() {
     setHorseWeight("");
 
     console.log("保存完了");
+
+    // 保存後に一覧画面へ遷移 
+    router.push("/mypage");
   } catch (error) {
     console.error("保存エラー:", error);
   }
 };
-
-    
   return (
     <Box
       component="form"
@@ -98,12 +131,20 @@ export default function MemoForm() {
       noValidate
       sx={{ mt: 4, maxWidth: 600, mx: "auto" }}
     >
+    {/* 戻るボタン */}
+      <Link href="/mypage">
+        <Button variant="outlined" sx={{ mb: 2 }}>
+          一覧へ戻る
+        </Button>
+      </Link>
       <TextField
         label="レース名"
         fullWidth
         margin="normal"
         value={raceName}
         onChange={(e) => setRaceName(e.target.value)}
+        error={errors.raceName}
+        helperText={errors.raceName ? "必須項目です" : ""}
       />
 
       <TextField
@@ -114,6 +155,8 @@ export default function MemoForm() {
         InputLabelProps={{ shrink: true }}
         value={date}
         onChange={(e) => setDate(e.target.value)}
+        error={errors.date}
+        helperText={errors.date ? "必須項目です" : ""}
       />
 
       <TextField
@@ -124,6 +167,8 @@ export default function MemoForm() {
         margin="normal"
         value={rank}
         onChange={(e) => setRank(e.target.value)}
+        error={errors.rank}
+        helperText={errors.rank ? "必須項目です" : ""}
       />
 
       {/* 競馬場 */}
@@ -132,11 +177,13 @@ export default function MemoForm() {
         label="競馬場"
         fullWidth
         margin="normal"
-        value={racecourse}
+        value={raceCourse}
         onChange={(e) => {
-          setRacecourse(e.target.value);
+          setRaceCourse(e.target.value);
           setDistance("");
         }}
+        error={errors.raceCourse}
+        helperText={errors.raceCourse ? "必須項目です" : ""}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -159,6 +206,8 @@ export default function MemoForm() {
           setSurface(e.target.value);
           setDistance("");
         }}
+        error={errors.surface}
+        helperText={errors.surface ? "必須項目です" : ""}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -175,6 +224,8 @@ export default function MemoForm() {
         margin="normal"
         value={courseDirection}
         onChange={(e) => setCourseDirection(e.target.value)}
+        error={errors.courseDirection}
+        helperText={errors.courseDirection ? "必須項目です" : ""}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -191,7 +242,9 @@ export default function MemoForm() {
         margin="normal"
         value={distance}
         onChange={(e) => setDistance(e.target.value)}
-        disabled={!racecourse || !surface}
+        disabled={!raceCourse || !surface}
+        error={errors.distance}
+        helperText={errors.distance ? "必須項目です" : ""}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -211,6 +264,8 @@ export default function MemoForm() {
         margin="normal"
         value={trackCondition}
         onChange={(e) => setTrackCondition(e.target.value)}
+        error={errors.trackCondition}
+        helperText={errors.trackCondition ? "必須項目です" : ""}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -229,6 +284,8 @@ export default function MemoForm() {
         margin="normal"
         value={horseNumber}
         onChange={(e) => setHorseNumber(e.target.value)}
+        error={errors.horseNumber}
+        helperText={errors.horseNumber ? "必須項目です" : ""}
       />
 
       <TextField
@@ -237,6 +294,8 @@ export default function MemoForm() {
         margin="normal"
         value={jockey}
         onChange={(e) => setJockey(e.target.value)}
+        error={errors.jockey}
+        helperText={errors.jockey ? "必須項目です" : ""}
       />
 
       <TextField
@@ -246,6 +305,8 @@ export default function MemoForm() {
         margin="normal"
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
+        error={errors.weight}
+        helperText={errors.weight ? "必須項目です" : ""}
       />
 
       <TextField
@@ -255,6 +316,8 @@ export default function MemoForm() {
         margin="normal"
         value={horseWeight}
         onChange={(e) => setHorseWeight(e.target.value)}
+        error={errors.horseWeight}
+        helperText={errors.horseWeight ? "必須項目です" : ""}
       />
 
       <TextField
@@ -265,6 +328,8 @@ export default function MemoForm() {
         margin="normal"
         value={review}
         onChange={(e) => setReview(e.target.value)}
+        error={errors.review}
+        helperText={errors.review ? "必須項目です" : ""}
       />
 
       <Button type="submit" variant="contained" sx={{ mt: 2 }}>
