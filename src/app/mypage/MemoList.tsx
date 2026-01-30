@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
+import Link from "next/link";
 
 // 型定義
 type Memo = {
@@ -80,6 +81,10 @@ export default function MemoList() {
             <p>着順: {memo.rank}着</p>
             <p>回顧: {memo.review}</p>
             <button onClick={() => handleDelete(memo.id)}>削除</button>
+            <Link href={`/mypage/edit/${memo.id}`}>
+              <button>編集</button>
+            </Link>
+
           </div>
         ))
       )}
