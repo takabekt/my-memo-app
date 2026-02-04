@@ -290,10 +290,10 @@ export default function EditPage() {
         <MenuItem value="">
           <em>選択してください</em>
         </MenuItem>
-        <MenuItem value="良">良</MenuItem>
-        <MenuItem value="稍重">稍重</MenuItem>
-        <MenuItem value="重">重</MenuItem>
-        <MenuItem value="不良">不良</MenuItem>
+        <MenuItem value="良">良☀️</MenuItem>
+        <MenuItem value="稍重">稍重💧</MenuItem>
+        <MenuItem value="重">重🌧</MenuItem>
+        <MenuItem value="不良">不良⛈</MenuItem>
       </TextField>
 
       <TextField

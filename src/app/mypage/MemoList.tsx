@@ -107,7 +107,7 @@ export default function MemoList() {
 
           {/* 競馬場 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏟</Typography>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏇</Typography>
             <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
               競馬場：{memo.raceCourse}
             </Typography>
