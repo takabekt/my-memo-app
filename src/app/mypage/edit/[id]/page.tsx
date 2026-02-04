@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import { TextField, Button, Box, MenuItem } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -30,6 +31,8 @@ export default function EditPage() {
 
   // エラー管理
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  // ダイアログの表示制御
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   // 距離データ（MemoForm と同じ）
   const distanceData: Record<string, Record<string, number[]>> = {
@@ -142,17 +145,18 @@ export default function EditPage() {
         px: { xs: 2, sm: 0 }
       }}
     >
-      <Link href="/mypage">
-        <Button variant="outlined" sx={{
-        mb: 2,
-        fontSize: { xs: "0.85rem", sm: "1rem" },
-        py: { xs: 0.8, sm: 1 },
-        px: { xs: 2, sm: 3 }
-      }}
+      <Button
+        variant="outlined"
+        onClick={(e) => { e.preventDefault(); setOpenConfirm(true); }}
+        sx={{
+          mb: 2,
+          fontSize: { xs: "0.85rem", sm: "1rem" },
+          py: { xs: 0.8, sm: 1 },
+          px: { xs: 2, sm: 3 }
+        }}
       >
-          一覧へ戻る
-        </Button>
-      </Link>
+        一覧へ戻る
+      </Button>
 
       {/* 以下、MemoForm と同じ TextField 群 */}
       <TextField
@@ -368,6 +372,26 @@ export default function EditPage() {
       >
         更新
       </Button>
+      {/* 確認ダイアログの表示 */}
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)} aria-labelledby="confirm-back-title">
+        <DialogTitle id="confirm-back-title">確認</DialogTitle>
+        <DialogContent>
+          <Typography>本当に一覧へ戻りますか？ 保存していない変更は失われます。</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>キャンセル</Button>
+          <Button
+            onClick={() => {
+              setOpenConfirm(false);
+              router.push("/mypage");
+            }}
+            variant="contained"
+            color="primary"
+          >
+            戻る
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
