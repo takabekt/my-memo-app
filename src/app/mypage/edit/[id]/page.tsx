@@ -8,6 +8,7 @@ import { db, auth } from "@/firebase";
 import Link from "next/link";
 // 編集ページ
 export default function EditPage() {
+  // idを受け取る
   const params = useParams();
   const docId = Array.isArray(params.id) ? params.id[0] : params.id; 
   const router = useRouter();
@@ -109,7 +110,7 @@ export default function EditPage() {
     if (!user) return;
 
     const ref = doc(db, "users", user.uid, "raceReviews", docId);
-
+    // Firestore のデータを更新
     await updateDoc(ref, {
       raceName,
       date,
@@ -125,7 +126,7 @@ export default function EditPage() {
       weight,
       horseWeight,
     });
-
+    // 更新後は一覧ページへ戻る
     router.push("/mypage");
   };
 
@@ -134,10 +135,21 @@ export default function EditPage() {
       component="form"
       onSubmit={handleUpdate}
       noValidate
-      sx={{ mt: 4, maxWidth: 600, mx: "auto" }}
+      sx={{
+        mt: 4,
+        maxWidth: { xs: "100%", sm: 600 },
+        mx: "auto",
+        px: { xs: 2, sm: 0 }
+      }}
     >
       <Link href="/mypage">
-        <Button variant="outlined" sx={{ mb: 2 }}>
+        <Button variant="outlined" sx={{
+        mb: 2,
+        fontSize: { xs: "0.85rem", sm: "1rem" },
+        py: { xs: 0.8, sm: 1 },
+        px: { xs: 2, sm: 3 }
+      }}
+      >
           一覧へ戻る
         </Button>
       </Link>
@@ -151,6 +163,7 @@ export default function EditPage() {
         onChange={(e) => setRaceName(e.target.value)}
         error={errors.raceName}
         helperText={errors.raceName ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -163,6 +176,7 @@ export default function EditPage() {
         onChange={(e) => setDate(e.target.value)}
         error={errors.date}
         helperText={errors.date ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -174,6 +188,7 @@ export default function EditPage() {
         onChange={(e) => setRank(e.target.value)}
         error={errors.rank}
         helperText={errors.rank ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -188,6 +203,7 @@ export default function EditPage() {
         }}
         error={errors.raceCourse}
         helperText={errors.raceCourse ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -211,6 +227,7 @@ export default function EditPage() {
         }}
         error={errors.surface}
         helperText={errors.surface ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -228,6 +245,7 @@ export default function EditPage() {
         onChange={(e) => setCourseDirection(e.target.value)}
         error={errors.courseDirection}
         helperText={errors.courseDirection ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -246,6 +264,7 @@ export default function EditPage() {
         disabled={!raceCourse || !surface}
         error={errors.distance}
         helperText={errors.distance ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -266,6 +285,7 @@ export default function EditPage() {
         onChange={(e) => setTrackCondition(e.target.value)}
         error={errors.trackCondition}
         helperText={errors.trackCondition ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -285,6 +305,7 @@ export default function EditPage() {
         onChange={(e) => setHorseNumber(e.target.value)}
         error={errors.horseNumber}
         helperText={errors.horseNumber ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -295,6 +316,7 @@ export default function EditPage() {
         onChange={(e) => setJockey(e.target.value)}
         error={errors.jockey}
         helperText={errors.jockey ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -306,6 +328,7 @@ export default function EditPage() {
         onChange={(e) => setWeight(e.target.value)}
         error={errors.weight}
         helperText={errors.weight ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -317,6 +340,7 @@ export default function EditPage() {
         onChange={(e) => setHorseWeight(e.target.value)}
         error={errors.horseWeight}
         helperText={errors.horseWeight ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -329,9 +353,19 @@ export default function EditPage() {
         onChange={(e) => setReview(e.target.value)}
         error={errors.review}
         helperText={errors.review ? "必須項目です" : ""}
+        sx={{
+        fontSize: { xs: "0.9rem", sm: "1rem" },
+        lineHeight: 1.6
+      }}
       />
 
-      <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+      <Button type="submit" variant="contained" sx={{
+        mt: 2,
+        fontSize: { xs: "0.9rem", sm: "1rem" },
+        py: { xs: 1, sm: 1.2 },
+        px: { xs: 3, sm: 4 }
+      }}
+      >
         更新
       </Button>
     </Box>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import Link from "next/link";
+import { Box, Typography, Button } from "@mui/material";
 
 // 型定義
 type Memo = {
@@ -61,33 +62,175 @@ export default function MemoList() {
   };
 
   return (
-    <div>
-      {memos.length === 0 ? (
-        <p>まだメモがありません。</p>
-      ) : (
-        memos.map((memo) => (
-          <div key={memo.id} style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "1rem" }}>
-            <h3>{memo.raceName}</h3>
-            <p>日付: {memo.date}</p>
-            <p>競馬場: {memo.raceCourse}</p>
-            <p>コース方向: {memo.courseDirection}</p>
-            <p>馬場: {memo.surface}</p>
-            <p>距離: {memo.distance}メートル</p>
-            <p>馬場状態: {memo.trackCondition}</p>
-            <p>馬番: {memo.horseNumber}番</p>
-            <p>騎手: {memo.jockey}</p>
-            <p>斤量: {memo.weight}kg</p>
-            <p>馬体重: {memo.horseWeight}kg</p>
-            <p>着順: {memo.rank}着</p>
-            <p>回顧: {memo.review}</p>
-            <button onClick={() => handleDelete(memo.id)}>削除</button>
-            <Link href={`/mypage/edit/${memo.id}`}>
-              <button>編集</button>
-            </Link>
+  // 一覧を中央揃えにする
+  <Box
+  sx={{
+    maxWidth: { xs: "100%", sm: 600 },
+    px: { xs: 1, sm: 0 },
+    mx: "auto",
+    mt: 4,
+  }}
+  >
+    {memos.length === 0 ? (
+      <Typography>まだメモがありません。</Typography>
+    ) : (
+      memos.map((memo) => (
+        // カード風で一覧表示する
+        <Box
+          key={memo.id}
+          sx={{
+            border: "1px solid #ccc",
+            borderRadius: 2,
+            p: { xs: 1.5, sm: 2 },
+            mb: 3,
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: "bold",
+              mb: 1,
+              fontSize: { xs: "1.1rem", sm: "1.25rem" },
+            }}
+          >
+            {memo.raceName}
+          </Typography>
 
-          </div>
-        ))
-      )}
-    </div>
+          {/* 日付 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>📅</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              日付：{memo.date}
+            </Typography>
+          </Box>
+
+          {/* 競馬場 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏟</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              競馬場：{memo.raceCourse}
+            </Typography>
+          </Box>
+
+          {/* コース方向 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>↩</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              コース方向：{memo.courseDirection}
+            </Typography>
+          </Box>
+
+          {/* 馬場 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>🌱</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              馬場：{memo.surface}
+            </Typography>
+          </Box>
+
+          {/* 距離 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>📏</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              距離：{memo.distance}m
+            </Typography>
+          </Box>
+
+          {/* 馬場状態 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>🟫</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              馬場状態：{memo.trackCondition}
+            </Typography>
+          </Box>
+
+          {/* 馬番 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐎</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              馬番：{memo.horseNumber}
+            </Typography>
+          </Box>
+
+          {/* 騎手 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>👤</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              騎手：{memo.jockey}
+            </Typography>
+          </Box>
+
+          {/* 斤量 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>⚖</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              斤量：{memo.weight}kg
+            </Typography>
+          </Box>
+
+          {/* 馬体重 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐴</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              馬体重：{memo.horseWeight}kg
+            </Typography>
+          </Box>
+
+          {/* 着順 */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏁</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              着順：{memo.rank}着
+            </Typography>
+          </Box>
+
+          {/* 回顧 */}
+          <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mt: 1 }}>
+            <Typography sx={{ width: "1.4em", textAlign: "center" }}>📝</Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+                lineHeight: 1.6,
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              回顧：{memo.review}
+            </Typography>
+          </Box>
+
+          {/* ボタンを横並びに */}
+          <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{
+                minWidth: { xs: 70, sm: 80 },
+                fontSize: { xs: "0.75rem", sm: "0.9rem" },
+                py: { xs: 0.5, sm: 1 },
+              }}
+              onClick={() => handleDelete(memo.id)}
+            >
+              削除
+            </Button>
+            <Link href={`/mypage/edit/${memo.id}`}>
+              <Button
+                variant="contained"
+                sx={{
+                  minWidth: { xs: 70, sm: 80 },
+                  fontSize: { xs: "0.75rem", sm: "0.9rem" },
+                  py: { xs: 0.5, sm: 1 },
+                }}
+              >
+                編集
+              </Button>
+            </Link>
+          </Box>
+
+        </Box>
+      ))
+    )}
+  </Box>
+
   );
 }

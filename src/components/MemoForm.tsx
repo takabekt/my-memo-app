@@ -7,7 +7,7 @@ import { db, auth } from "../firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-
+// 新規追加
 export default function MemoForm() {
   const router = useRouter();
   // 各formの入力値を管理
@@ -129,11 +129,17 @@ export default function MemoForm() {
       component="form"
       onSubmit={handleSubmit}
       noValidate
-      sx={{ mt: 4, maxWidth: 600, mx: "auto" }}
+      sx={{ mt: 4, maxWidth: { xs: "100%", sm: 600 }, mx: "auto", px: { xs: 2, sm: 0 } }}
     >
     {/* 戻るボタン */}
       <Link href="/mypage">
-        <Button variant="outlined" sx={{ mb: 2 }}>
+        <Button variant="outlined" 
+        sx={{
+          mb: 2,
+          fontSize: { xs: "0.85rem", sm: "1rem" },
+          py: { xs: 0.8, sm: 1 },
+          px: { xs: 2, sm: 3 }
+        }}>
           一覧へ戻る
         </Button>
       </Link>
@@ -145,6 +151,7 @@ export default function MemoForm() {
         onChange={(e) => setRaceName(e.target.value)}
         error={errors.raceName}
         helperText={errors.raceName ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -157,6 +164,7 @@ export default function MemoForm() {
         onChange={(e) => setDate(e.target.value)}
         error={errors.date}
         helperText={errors.date ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -169,6 +177,7 @@ export default function MemoForm() {
         onChange={(e) => setRank(e.target.value)}
         error={errors.rank}
         helperText={errors.rank ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       {/* 競馬場 */}
@@ -184,6 +193,7 @@ export default function MemoForm() {
         }}
         error={errors.raceCourse}
         helperText={errors.raceCourse ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -208,6 +218,7 @@ export default function MemoForm() {
         }}
         error={errors.surface}
         helperText={errors.surface ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -226,6 +237,7 @@ export default function MemoForm() {
         onChange={(e) => setCourseDirection(e.target.value)}
         error={errors.courseDirection}
         helperText={errors.courseDirection ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -245,6 +257,7 @@ export default function MemoForm() {
         disabled={!raceCourse || !surface}
         error={errors.distance}
         helperText={errors.distance ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -266,6 +279,7 @@ export default function MemoForm() {
         onChange={(e) => setTrackCondition(e.target.value)}
         error={errors.trackCondition}
         helperText={errors.trackCondition ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -286,6 +300,7 @@ export default function MemoForm() {
         onChange={(e) => setHorseNumber(e.target.value)}
         error={errors.horseNumber}
         helperText={errors.horseNumber ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -296,6 +311,7 @@ export default function MemoForm() {
         onChange={(e) => setJockey(e.target.value)}
         error={errors.jockey}
         helperText={errors.jockey ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -307,6 +323,7 @@ export default function MemoForm() {
         onChange={(e) => setWeight(e.target.value)}
         error={errors.weight}
         helperText={errors.weight ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -318,6 +335,7 @@ export default function MemoForm() {
         onChange={(e) => setHorseWeight(e.target.value)}
         error={errors.horseWeight}
         helperText={errors.horseWeight ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
 
       <TextField
@@ -330,9 +348,19 @@ export default function MemoForm() {
         onChange={(e) => setReview(e.target.value)}
         error={errors.review}
         helperText={errors.review ? "必須項目です" : ""}
-      />
+        sx={{
+          fontSize: { xs: "0.9rem", sm: "1rem" },
+          lineHeight: 1.6
+        }}
+       />
 
-      <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+      <Button type="submit" variant="contained" sx={{
+        mt: 2,
+        fontSize: { xs: "0.9rem", sm: "1rem" },
+        py: { xs: 1, sm: 1.2 },
+        px: { xs: 3, sm: 4 }
+      }}
+      >
         保存
       </Button>
     </Box>
