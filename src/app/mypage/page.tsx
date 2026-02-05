@@ -13,6 +13,7 @@ export default function MyPage() {
           mx: "auto",
           mt: 4,
           px: { xs: 2, sm: 0 },
+          pb: 6,
         }}
       >
         <Typography

@@ -151,7 +151,8 @@ export default function EditPage() {
         mt: 4,
         maxWidth: { xs: "100%", sm: 600 },
         mx: "auto",
-        px: { xs: 2, sm: 0 }
+        px: { xs: 2, sm: 0 },
+        pb: 6,
       }}
     >
       <Button

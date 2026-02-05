@@ -139,7 +139,7 @@ export default function MemoForm() {
       component="form"
       onSubmit={handleSubmit}
       noValidate
-      sx={{ mt: 4, maxWidth: { xs: "100%", sm: 600 }, mx: "auto", px: { xs: 2, sm: 0 } }}
+      sx={{ mt: 4, maxWidth: { xs: "100%", sm: 600 }, mx: "auto", px: { xs: 2, sm: 0 }, pb: 6, }}
     >
     {/* 戻るボタン */}
       <Button variant="outlined" onClick={(e) => { e.preventDefault(); setOpenConfirm(true); }} sx={{ mb:2, fontSize:{ xs:"0.85rem", sm:"1rem" }, py:{ xs:0.8, sm:1 }, px:{ xs:2, sm:3 } }}>
