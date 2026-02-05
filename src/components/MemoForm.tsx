@@ -6,7 +6,7 @@ import { TextField, Button, Box, MenuItem } from "@mui/material";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import ConfirmDialog from "@/components/ConfirmDialog"; 
 
 // 新規追加
 export default function MemoForm() {
@@ -48,6 +48,12 @@ export default function MemoForm() {
   // 選べる距離を選択
   const availableDistances =
     raceCourse && surface ? distanceData[raceCourse]?.[surface] ?? [] : [];
+
+  // 一覧へ戻るボタン押下時の処理
+  const handleConfirmBack = () => {
+    setOpenConfirm(false);
+    router.push("/mypage");
+  };
   // 保存ボタン押下時の処理
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -361,17 +367,11 @@ export default function MemoForm() {
         保存
       </Button>
       {/* 確認ダイアログの表示 */}
-      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)} aria-labelledby="confirm-back-title">
-        <DialogTitle id="confirm-back-title">確認</DialogTitle>
-        <DialogContent>
-          <Typography>本当に一覧へ戻りますか？ 保存していない変更は失われます。</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>キャンセル</Button>
-          <Button onClick={() => { setOpenConfirm(false); router.push("/mypage"); }} variant="contained" color="primary">戻る</Button>
-        </DialogActions>
-      </Dialog>
-
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={handleConfirmBack}
+      />
     </Box>
   );
 }

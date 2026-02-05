@@ -6,7 +6,9 @@ import { TextField, Button, Box, MenuItem } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
-import Link from "next/link";
+import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
+import ConfirmDialog from "@/components/ConfirmDialog";
+
 // 編集ページ
 export default function EditPage() {
   // idを受け取る
@@ -33,6 +35,12 @@ export default function EditPage() {
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   // ダイアログの表示制御
   const [openConfirm, setOpenConfirm] = useState(false);
+
+  // 戻る処理
+  const handleConfirmBack = () => {
+  setOpenConfirm(false);
+  router.push("/mypage");
+};
 
   // 距離データ（MemoForm と同じ）
   const distanceData: Record<string, Record<string, number[]>> = {
@@ -81,6 +89,7 @@ export default function EditPage() {
 
     fetchData();
   }, [docId]);
+  
 
   // 更新処理
   const handleUpdate = async (e: React.FormEvent) => {
@@ -167,7 +176,7 @@ export default function EditPage() {
         onChange={(e) => setRaceName(e.target.value)}
         error={errors.raceName}
         helperText={errors.raceName ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       />
 
       <TextField
@@ -180,7 +189,7 @@ export default function EditPage() {
         onChange={(e) => setDate(e.target.value)}
         error={errors.date}
         helperText={errors.date ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={dateFieldSx}
       />
 
       <TextField
@@ -192,7 +201,7 @@ export default function EditPage() {
         onChange={(e) => setRank(e.target.value)}
         error={errors.rank}
         helperText={errors.rank ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       />
 
       <TextField
@@ -207,7 +216,7 @@ export default function EditPage() {
         }}
         error={errors.raceCourse}
         helperText={errors.raceCourse ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -231,7 +240,7 @@ export default function EditPage() {
         }}
         error={errors.surface}
         helperText={errors.surface ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -249,7 +258,7 @@ export default function EditPage() {
         onChange={(e) => setCourseDirection(e.target.value)}
         error={errors.courseDirection}
         helperText={errors.courseDirection ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -268,7 +277,7 @@ export default function EditPage() {
         disabled={!raceCourse || !surface}
         error={errors.distance}
         helperText={errors.distance ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -289,7 +298,7 @@ export default function EditPage() {
         onChange={(e) => setTrackCondition(e.target.value)}
         error={errors.trackCondition}
         helperText={errors.trackCondition ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -309,7 +318,7 @@ export default function EditPage() {
         onChange={(e) => setHorseNumber(e.target.value)}
         error={errors.horseNumber}
         helperText={errors.horseNumber ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       />
 
       <TextField
@@ -320,7 +329,7 @@ export default function EditPage() {
         onChange={(e) => setJockey(e.target.value)}
         error={errors.jockey}
         helperText={errors.jockey ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       />
 
       <TextField
@@ -332,7 +341,7 @@ export default function EditPage() {
         onChange={(e) => setWeight(e.target.value)}
         error={errors.weight}
         helperText={errors.weight ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       />
 
       <TextField
@@ -344,7 +353,7 @@ export default function EditPage() {
         onChange={(e) => setHorseWeight(e.target.value)}
         error={errors.horseWeight}
         helperText={errors.horseWeight ? "必須項目です" : ""}
-        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+        sx={fieldSx}
       />
 
       <TextField
@@ -373,25 +382,11 @@ export default function EditPage() {
         更新
       </Button>
       {/* 確認ダイアログの表示 */}
-      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)} aria-labelledby="confirm-back-title">
-        <DialogTitle id="confirm-back-title">確認</DialogTitle>
-        <DialogContent>
-          <Typography>本当に一覧へ戻りますか？ 保存していない変更は失われます。</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>キャンセル</Button>
-          <Button
-            onClick={() => {
-              setOpenConfirm(false);
-              router.push("/mypage");
-            }}
-            variant="contained"
-            color="primary"
-          >
-            戻る
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={handleConfirmBack}
+      />
     </Box>
   );
 }

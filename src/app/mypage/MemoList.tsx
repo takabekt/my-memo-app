@@ -5,6 +5,7 @@ import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import Link from "next/link";
 import { Box, Typography, Button } from "@mui/material";
+import { fieldSx, dateFieldSx } from "@/utils/fieldSx"; 
 
 // 型定義
 type Memo = {
@@ -100,7 +101,7 @@ export default function MemoList() {
           {/* 日付 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>📅</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={dateFieldSx}>
               日付：{memo.date}
             </Typography>
           </Box>
@@ -108,7 +109,7 @@ export default function MemoList() {
           {/* 競馬場 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏇</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               競馬場：{memo.raceCourse}
             </Typography>
           </Box>
@@ -116,7 +117,7 @@ export default function MemoList() {
           {/* コース方向 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>↩</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               コース方向：{memo.courseDirection}
             </Typography>
           </Box>
@@ -124,7 +125,7 @@ export default function MemoList() {
           {/* 馬場 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🌱</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               馬場：{memo.surface}
             </Typography>
           </Box>
@@ -132,7 +133,7 @@ export default function MemoList() {
           {/* 距離 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>📏</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               距離：{memo.distance}m
             </Typography>
           </Box>
@@ -140,7 +141,7 @@ export default function MemoList() {
           {/* 馬場状態 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🟫</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               馬場状態：{memo.trackCondition}
             </Typography>
           </Box>
@@ -148,7 +149,7 @@ export default function MemoList() {
           {/* 馬番 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐎</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               馬番：{memo.horseNumber}
             </Typography>
           </Box>
@@ -156,7 +157,7 @@ export default function MemoList() {
           {/* 騎手 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>👤</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               騎手：{memo.jockey}
             </Typography>
           </Box>
@@ -164,7 +165,7 @@ export default function MemoList() {
           {/* 斤量 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>⚖</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               斤量：{memo.weight}kg
             </Typography>
           </Box>
@@ -172,7 +173,7 @@ export default function MemoList() {
           {/* 馬体重 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐴</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               馬体重：{memo.horseWeight}kg
             </Typography>
           </Box>
@@ -180,7 +181,7 @@ export default function MemoList() {
           {/* 着順 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏁</Typography>
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography sx={fieldSx}>
               着順：{memo.rank}着
             </Typography>
           </Box>
