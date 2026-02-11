@@ -11,8 +11,12 @@ export default function ClientAuthProvider() {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       console.log("ログイン状態:", currentUser);
 
-      if (currentUser) {
-        await saveUserIfNew(currentUser);
+      if (currentUser && currentUser.uid) {
+        try {
+          await saveUserIfNew(currentUser);
+        } catch (error) {
+          console.error("ユーザー情報の保存に失敗しました:", error);
+        }
       }
     });
 
@@ -20,14 +24,16 @@ export default function ClientAuthProvider() {
   }, []);
 
   const saveUserIfNew = async (user: User) => {
+    if (!user || !user.uid) return;
+
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
       await setDoc(userRef, {
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
+        name: user.displayName || "",
+        email: user.email || "",
+        photoURL: user.photoURL || "",
         createdAt: serverTimestamp(),
       });
       console.log("新しいユーザーをFirestoreに保存しました！");
