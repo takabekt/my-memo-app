@@ -17,6 +17,7 @@ export default function EditPage() {
   const router = useRouter();
 
   // 入力値
+  const [horseName, setHorseName] = useState("");
   const [raceName, setRaceName] = useState("");
   const [date, setDate] = useState("");
   const [rank, setRank] = useState("");
@@ -39,7 +40,7 @@ export default function EditPage() {
   // 戻る処理
   const handleConfirmBack = () => {
   setOpenConfirm(false);
-  router.push("/mypage");
+  router.push("/search");
 };
 
   // 距離データ（MemoForm と同じ）
@@ -71,6 +72,7 @@ export default function EditPage() {
       if (snapshot.exists()) {
         const data = snapshot.data();
 
+        setHorseName(data.horseName);
         setRaceName(data.raceName);
         setDate(data.date);
         setRank(data.rank);
@@ -96,6 +98,7 @@ export default function EditPage() {
     e.preventDefault();
 
     const newErrors = {
+      horseName: !horseName,
       raceName: !raceName,
       date: !date,
       rank: !rank,
@@ -124,6 +127,7 @@ export default function EditPage() {
     const ref = doc(db, "users", user.uid, "raceReviews", docId);
     // Firestore のデータを更新
     await updateDoc(ref, {
+      horseName,
       raceName,
       date,
       rank,
@@ -139,7 +143,7 @@ export default function EditPage() {
       horseWeight,
     });
     // 更新後は一覧ページへ戻る
-    router.push("/mypage");
+    router.push("/search");
   };
 
   return (
@@ -169,6 +173,16 @@ export default function EditPage() {
       </Button>
 
       {/* 以下、MemoForm と同じ TextField 群 */}
+      <TextField
+        label="馬名"
+        fullWidth
+        margin="normal"
+        value={horseName}
+        onChange={(e) => setHorseName(e.target.value)}
+        error={errors.horseName}
+        helperText={errors.horseName ? "必須項目です" : ""}
+        sx={fieldSx}
+      />
       <TextField
         label="レース名"
         fullWidth

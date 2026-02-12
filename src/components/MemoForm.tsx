@@ -12,6 +12,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 export default function MemoForm() {
   const router = useRouter();
   // 各formの入力値を管理
+  const [horseName, setHorseName] = useState("");
   const [raceName, setRaceName] = useState("");
   const [date, setDate] = useState("");
   const [rank, setRank] = useState("");
@@ -52,7 +53,7 @@ export default function MemoForm() {
   // 一覧へ戻るボタン押下時の処理
   const handleConfirmBack = () => {
     setOpenConfirm(false);
-    router.push("/mypage");
+    router.push("/search");
   };
   // 保存ボタン押下時の処理
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,6 +61,7 @@ export default function MemoForm() {
   // 必須チェック
   const newErrors = {
     raceName: !raceName,
+    horseName: !horseName,
     date: !date,
     rank: !rank,
     review: !review,
@@ -95,6 +97,7 @@ export default function MemoForm() {
     // ユーザーごとにメモを設定
     // uidと自動IDをもとにメモを保存
     await addDoc(collection(db, "users", user.uid, "raceReviews"), {
+      horseName,
       raceName,
       date,
       rank,
@@ -112,6 +115,7 @@ export default function MemoForm() {
     });
 
     // 保存後にフォームをクリア
+    setHorseName("");
     setRaceName("");
     setDate("");
     setRank("");
@@ -129,7 +133,7 @@ export default function MemoForm() {
     console.log("保存完了");
 
     // 保存後に一覧画面へ遷移 
-    router.push("/mypage");
+    router.push("/search");
   } catch (error) {
     console.error("保存エラー:", error);
   }
@@ -143,9 +147,19 @@ export default function MemoForm() {
     >
     {/* 戻るボタン */}
       <Button variant="outlined" onClick={(e) => { e.preventDefault(); setOpenConfirm(true); }} sx={{ mb:2, fontSize:{ xs:"0.85rem", sm:"1rem" }, py:{ xs:0.8, sm:1 }, px:{ xs:2, sm:3 } }}>
-        一覧へ戻る
+        検索画面へ戻る
       </Button>
 
+      <TextField
+        label="馬名"
+        fullWidth
+        margin="normal"
+        value={horseName}
+        onChange={(e) => setHorseName(e.target.value)}
+        error={errors.horseName}
+        helperText={errors.horseName ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+      />
       <TextField
         label="レース名"
         fullWidth

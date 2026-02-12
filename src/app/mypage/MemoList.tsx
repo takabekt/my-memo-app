@@ -11,6 +11,7 @@ import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
 type Memo = {
   id: string;
   raceName: string;
+  horseName: string;
   date: string;
   rank: string;
   review: string;
@@ -27,7 +28,7 @@ type Memo = {
 };
 
 
-export default function MemoList() {
+export default function MemoList({ filterHorseName }: { filterHorseName?: string }) {
   const [memos, setMemos] = useState<Memo[]>([]);
 
   // 一覧取得
@@ -44,11 +45,26 @@ export default function MemoList() {
         ...(doc.data() as Omit<Memo, "id">),
       }));
 
-      setMemos(list);
+      // 🔽 日付の新しい順にソート（降順）
+      list.sort((a, b) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+
+
+      // 🔍 馬名でフィルター（渡されていれば）
+      const filtered = filterHorseName
+        ? list.filter(
+            (memo) =>
+              typeof memo.horseName === "string" &&
+              memo.horseName.trim().toLowerCase() === filterHorseName.trim().toLowerCase()
+          )
+        : list;
+
+      setMemos(filtered);
     };
 
     fetchData();
-  }, []);
+    }, [filterHorseName]);
 
   // 削除処理
   const handleDelete = async (id: string) => {
@@ -72,9 +88,13 @@ export default function MemoList() {
     mt: 4,
   }}
   >
-    {memos.length === 0 ? (
-      <Typography>まだメモがありません。</Typography>
-    ) : (
+      {memos.length === 0 ? (
+        <Typography color="text.secondary">
+          {filterHorseName
+            ? `${filterHorseName} のメモはまだありません。`
+            : "まだメモがありません。"}
+        </Typography>
+      ) : (
       memos.map((memo) => (
         // カード風で一覧表示する
         <Box
