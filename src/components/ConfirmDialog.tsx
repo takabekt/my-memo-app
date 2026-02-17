@@ -17,8 +17,8 @@ export default function ConfirmDialog({
   onConfirm,
   title = "確認",
   message = "本当に前の画面へ戻りますか？ 保存していない変更は失われます。",
-  confirmLabel = "戻る",
-  cancelLabel = "キャンセル"
+  confirmLabel = "はい",
+  cancelLabel = "いいえ"
 }: Props) {
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="confirm-back-title">

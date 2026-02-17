@@ -37,7 +37,7 @@ export default function HorseMemoPage() {
         <Button variant="outlined" onClick={() => router.push(from || "/search")}>
           戻る
         </Button>
-        {/*新規追加ボタン */}
+        {/*新規登録ボタン */}
         <Button
           variant="contained"
           onClick={() =>

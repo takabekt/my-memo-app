@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import { TextField, Button, Box, MenuItem } from "@mui/material";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useSnackbar } from "notistack";
 
 // 編集ページ
 export default function EditPage() {
@@ -96,6 +96,8 @@ export default function EditPage() {
   
 
   // 更新処理
+  const { enqueueSnackbar } = useSnackbar();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -126,6 +128,10 @@ export default function EditPage() {
     const user = auth.currentUser;
     if (!user) return;
 
+    // 二重送信防止
+    if (isSubmitting) return; 
+    setIsSubmitting(true);  // 更新中フラグON
+
     const ref = doc(db, "users", user.uid, "raceReviews", docId);
     // Firestore のデータを更新
     await updateDoc(ref, {
@@ -144,8 +150,16 @@ export default function EditPage() {
       weight,
       horseWeight,
     });
-    // 更新後は一覧ページへ戻る
-    router.push("/search");
+
+    setTimeout(() => {
+      // ✅ トースト通知を表示
+      enqueueSnackbar("メモを更新しました", { variant: "success" });
+
+      // 更新後は一覧ページへ戻る
+      router.push("/search");
+      // 更新中フラグOFF
+      setIsSubmitting(false);
+    }, 3000); // 3秒後に遷移
   };
 
   return (
@@ -396,7 +410,7 @@ export default function EditPage() {
         px: { xs: 3, sm: 4 }
       }}
       >
-        更新
+        {isSubmitting ? "更新中..." : "更新"}
       </Button>
       {/* 確認ダイアログの表示 */}
       <ConfirmDialog

@@ -6,6 +6,8 @@ import { db, auth } from "@/firebase";
 import Link from "next/link";
 import { Box, Typography, Button } from "@mui/material";
 import { fieldSx, dateFieldSx } from "@/utils/fieldSx"; 
+import { useSnackbar } from "notistack";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 // 型定義
 type Memo = {
@@ -31,6 +33,12 @@ type Memo = {
 export default function MemoList({ filterHorseName }: { filterHorseName?: string }) {
   const [memos, setMemos] = useState<Memo[]>([]);
 
+  // ダイアログ表示管理
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  // どのメモを削除しようとしているかを一時的に保存する
+  const [targetId, setTargetId] = useState<string | null>(null);
+
+
   // 一覧取得
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +58,6 @@ export default function MemoList({ filterHorseName }: { filterHorseName?: string
         return new Date(b.date).getTime() - new Date(a.date).getTime();
       });
 
-
       // 🔍 馬名でフィルター（渡されていれば）
       const filtered = filterHorseName
         ? list.filter(
@@ -66,16 +73,58 @@ export default function MemoList({ filterHorseName }: { filterHorseName?: string
     fetchData();
     }, [filterHorseName]);
 
+  // 削除ボタン押下時
+  const handleClickDelete = (id: string) => {
+    setTargetId(id);
+    setConfirmOpen(true);
+  };
+
+  // ダイアログで「はい」
+  const handleConfirmDelete = async () => {
+    if (!targetId) return;
+
+    const deletedMemo = await handleDelete(targetId); // 削除したメモを受け取る
+
+    // 3秒後にダイアログを閉じてトースト表示
+    setTimeout(() => {
+      setConfirmOpen(false);
+      setTargetId(null);
+
+      enqueueSnackbar(
+        deletedMemo?.horseName
+          ? `「${deletedMemo.horseName}」のメモを削除しました`
+          : "メモを削除しました",
+        {
+          variant: "info",
+          autoHideDuration: 3000,
+          anchorOrigin: { vertical: "top", horizontal: "right" },
+        }
+      );
+    }, 3000);
+  };
+
+
+  // ダイアログで「キャンセル」
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setTargetId(null);
+  };
+
   // 削除処理
-  const handleDelete = async (id: string) => {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleDelete = async (id: string): Promise<Memo | null> => {
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user) return null;
+
+    // 削除対象のメモを取得（トースト用に使う）
+    const deleted = memos.find((memo) => memo.id === id) || null;
 
     const target = doc(db, "users", user.uid, "raceReviews", id);
     await deleteDoc(target);
-
     // 削除後に一覧を更新
     setMemos((prev) => prev.filter((memo) => memo.id !== id));
+
+    return deleted;
   };
 
   return (
@@ -230,7 +279,8 @@ export default function MemoList({ filterHorseName }: { filterHorseName?: string
                 fontSize: { xs: "0.75rem", sm: "0.9rem" },
                 py: { xs: 0.5, sm: 1 },
               }}
-              onClick={() => handleDelete(memo.id)}
+              // 確認ダイアログを開く
+              onClick={() => handleClickDelete(memo.id)}
             >
               削除
             </Button>
@@ -253,6 +303,14 @@ export default function MemoList({ filterHorseName }: { filterHorseName?: string
         </Box>
       ))
     )}
+    {/* 削除確認ダイアログ */}
+    <ConfirmDialog
+      open={confirmOpen}
+      title="削除の確認"
+      message="このメモを本当に削除しますか？"
+      onClose={handleCancelDelete}
+      onConfirm={handleConfirmDelete}
+    />
   </Box>
 
   );

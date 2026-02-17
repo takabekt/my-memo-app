@@ -6,6 +6,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConfirmDialog from "@/components/ConfirmDialog"; 
+import { useSnackbar } from "notistack";
 
 // 新規追加
 export default function MemoForm() {
@@ -61,89 +62,104 @@ export default function MemoForm() {
   setOpenConfirm(false);
   router.push(from || "/search"); 
   };
-  // 保存ボタン押下時の処理
+  // 登録ボタン押下時の処理
+  const { enqueueSnackbar } = useSnackbar();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  // 必須チェック
-  const newErrors = {
-    raceName: !raceName,
-    horseName: !horseName,
-    date: !date,
-    rank: !rank,
-    review: !review,
-    raceCourse: !raceCourse,
-    courseDirection: !courseDirection,
-    surface: !surface,
-    distance: !distance,
-    trackCondition: !trackCondition,
-    horseNumber: !horseNumber,
-    jockey: !jockey,
-    weight: !weight,
-    horseWeight: !horseWeight,
+
+    // 必須チェック
+    const newErrors = {
+      raceName: !raceName,
+      horseName: !horseName,
+      date: !date,
+      rank: !rank,
+      review: !review,
+      raceCourse: !raceCourse,
+      courseDirection: !courseDirection,
+      surface: !surface,
+      distance: !distance,
+      trackCondition: !trackCondition,
+      horseNumber: !horseNumber,
+      jockey: !jockey,
+      weight: !weight,
+      horseWeight: !horseWeight,
+    };
+
+    setErrors(newErrors);
+
+    // 1つでも true があればエラー
+    if (Object.values(newErrors).includes(true)) {
+      alert("未入力の項目があります");
+      return;
+    }
+
+    // uidを取得
+    // uid = Firebase Authentication がユーザーごとに自動で発行する「唯一のID」
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("ログインしていません");
+      return;
+    }
+
+    // 二重送信防止
+    if (isSubmitting) return; 
+    setIsSubmitting(true);  // 登録中フラグON
+
+    try {
+      // ユーザーごとにメモを設定
+      // uidと自動IDをもとにメモを保存
+      await addDoc(collection(db, "users", user.uid, "raceReviews"), {
+        horseName,
+        raceName,
+        date,
+        rank,
+        review,
+        raceCourse,
+        courseDirection,
+        surface,
+        distance,
+        trackCondition,
+        horseNumber,
+        jockey,
+        weight,
+        horseWeight,
+        createdAt: new Date(),
+      });
+
+      setTimeout(() => {
+        // 保存後にフォームをクリア
+        setHorseName("");
+        setRaceName("");
+        setDate("");
+        setRank("");
+        setReview("");
+        setRaceCourse("");
+        setCourseDirection("");
+        setSurface("");
+        setDistance("");
+        setTrackCondition("");
+        setHorseNumber("");
+        setJockey("");
+        setWeight("");
+        setHorseWeight("");
+        console.log("保存完了");
+        // ✅ トースト通知を表示
+        enqueueSnackbar("メモを登録しました", { variant: "success" });
+        // 一覧画面へ遷移
+        router.push("/search");
+
+        // 登録中フラグOFF
+        setIsSubmitting(false);
+      }, 3000); // 3秒後に遷移
+
+    } catch (error) {
+      console.error("登録エラー:", error);
+      enqueueSnackbar("登録に失敗しました", { variant: "error" });
+      // 登録中フラグOFF
+      setIsSubmitting(false);
+    }
   };
-
-  setErrors(newErrors);
-
-  // 1つでも true があればエラー
-  if (Object.values(newErrors).includes(true)) {
-    alert("未入力の項目があります");
-    return;
-  }
-
-
-  // uidを取得
-  // uid = Firebase Authentication がユーザーごとに自動で発行する「唯一のID」
-  const user = auth.currentUser;
-  if (!user) {
-    console.error("ログインしていません");
-    return;
-  }
-
-  try {
-    // ユーザーごとにメモを設定
-    // uidと自動IDをもとにメモを保存
-    await addDoc(collection(db, "users", user.uid, "raceReviews"), {
-      horseName,
-      raceName,
-      date,
-      rank,
-      review,
-      raceCourse,
-      courseDirection,
-      surface,
-      distance,
-      trackCondition,
-      horseNumber,
-      jockey,
-      weight,
-      horseWeight,
-      createdAt: new Date(),
-    });
-
-    // 保存後にフォームをクリア
-    setHorseName("");
-    setRaceName("");
-    setDate("");
-    setRank("");
-    setReview("");
-    setRaceCourse("");
-    setCourseDirection("");
-    setSurface("");
-    setDistance("");
-    setTrackCondition("");
-    setHorseNumber("");
-    setJockey("");
-    setWeight("");
-    setHorseWeight("");
-
-    console.log("保存完了");
-
-    // 保存後に一覧画面へ遷移 
-    router.push("/search");
-  } catch (error) {
-    console.error("保存エラー:", error);
-  }
-};
   return (
     <Box
       component="form"
@@ -395,7 +411,7 @@ export default function MemoForm() {
         px: { xs: 3, sm: 4 }
       }}
       >
-        保存
+        {isSubmitting ? "登録中..." : "登録"}
       </Button>
       {/* 確認ダイアログの表示 */}
       <ConfirmDialog
