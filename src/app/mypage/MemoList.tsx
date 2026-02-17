@@ -234,7 +234,9 @@ export default function MemoList({ filterHorseName }: { filterHorseName?: string
             >
               削除
             </Button>
-            <Link href={`/mypage/edit/${memo.id}`}>
+            <Link
+              href={`/mypage/edit/${memo.id}?from=${encodeURIComponent(`/horse/${encodeURIComponent(memo.horseName)}`)}`}
+            >
               <Button
                 variant="contained"
                 sx={{

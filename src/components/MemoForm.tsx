@@ -1,20 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import { TextField, Button, Box, MenuItem } from "@mui/material";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ConfirmDialog from "@/components/ConfirmDialog"; 
 
 // 新規追加
 export default function MemoForm() {
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const from = searchParams.get("from");
+  // クエリから horseName を取得
+  const initialHorseName = searchParams.get("horseName") || "";
+  // 初期値は今日の日付
+  const today = new Date().toISOString().split("T")[0];
+
   // 各formの入力値を管理
-  const [horseName, setHorseName] = useState("");
+  const [horseName, setHorseName] = useState(initialHorseName);
   const [raceName, setRaceName] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(today);
   const [rank, setRank] = useState("");
   const [review, setReview] = useState("");
   const [raceCourse, setRaceCourse] = useState("");
@@ -50,10 +56,10 @@ export default function MemoForm() {
   const availableDistances =
     raceCourse && surface ? distanceData[raceCourse]?.[surface] ?? [] : [];
 
-  // 一覧へ戻るボタン押下時の処理
+  // 戻るボタン押下時の処理
   const handleConfirmBack = () => {
-    setOpenConfirm(false);
-    router.push("/search");
+  setOpenConfirm(false);
+  router.push(from || "/search"); 
   };
   // 保存ボタン押下時の処理
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,10 +152,21 @@ export default function MemoForm() {
       sx={{ mt: 4, maxWidth: { xs: "100%", sm: 600 }, mx: "auto", px: { xs: 2, sm: 0 }, pb: 6, }}
     >
     {/* 戻るボタン */}
-      <Button variant="outlined" onClick={(e) => { e.preventDefault(); setOpenConfirm(true); }} sx={{ mb:2, fontSize:{ xs:"0.85rem", sm:"1rem" }, py:{ xs:0.8, sm:1 }, px:{ xs:2, sm:3 } }}>
-        検索画面へ戻る
-      </Button>
-
+    <Button
+      variant="outlined"
+      onClick={(e) => {
+        e.preventDefault();
+        setOpenConfirm(true);
+      }}
+      sx={{
+        mb: 2,
+        fontSize: { xs: "0.85rem", sm: "1rem" },
+        py: { xs: 0.8, sm: 1 },
+        px: { xs: 2, sm: 3 },
+      }}
+    >
+      戻る
+    </Button>
       <TextField
         label="馬名"
         fullWidth

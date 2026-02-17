@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import { TextField, Button, Box, MenuItem } from "@mui/material";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
@@ -14,7 +14,9 @@ export default function EditPage() {
   // idを受け取る
   const params = useParams();
   const docId = Array.isArray(params.id) ? params.id[0] : params.id; 
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const from = searchParams.get("from");
 
   // 入力値
   const [horseName, setHorseName] = useState("");
@@ -40,8 +42,8 @@ export default function EditPage() {
   // 戻る処理
   const handleConfirmBack = () => {
   setOpenConfirm(false);
-  router.push("/search");
-};
+  router.push(from || "/search"); 
+  };
 
   // 距離データ（MemoForm と同じ）
   const distanceData: Record<string, Record<string, number[]>> = {
@@ -169,7 +171,7 @@ export default function EditPage() {
           px: { xs: 2, sm: 3 }
         }}
       >
-        一覧へ戻る
+        戻る
       </Button>
 
       {/* 以下、MemoForm と同じ TextField 群 */}

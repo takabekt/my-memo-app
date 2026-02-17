@@ -70,7 +70,7 @@ export default function SearchPage() {
         sx={{ mb: 3 }}
       />
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-        <Link href="/mypage/new">
+        <Link href={`/mypage/new?from=/search`}>
             <Button variant="contained" color="primary">
             新規登録
             </Button>
@@ -80,7 +80,11 @@ export default function SearchPage() {
       <List>
         {filteredNames.map((name) => (
           <ListItem key={name} disablePadding>
-            <ListItemButton onClick={() => router.push(`/horse/${encodeURIComponent(name)}`)}>
+            <ListItemButton
+              onClick={() =>
+                router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
+              }
+            >
               <ListItemText primary={name} />
             </ListItemButton>
           </ListItem>

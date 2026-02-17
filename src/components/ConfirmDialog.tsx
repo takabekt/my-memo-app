@@ -16,7 +16,7 @@ export default function ConfirmDialog({
   onClose,
   onConfirm,
   title = "確認",
-  message = "本当に検索画面へ戻りますか？ 保存していない変更は失われます。",
+  message = "本当に前の画面へ戻りますか？ 保存していない変更は失われます。",
   confirmLabel = "戻る",
   cancelLabel = "キャンセル"
 }: Props) {
