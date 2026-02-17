@@ -33,6 +33,8 @@ type Memo = {
 export default function MemoList({ filterHorseName }: { filterHorseName?: string }) {
   const [memos, setMemos] = useState<Memo[]>([]);
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // ダイアログ表示管理
   const [confirmOpen, setConfirmOpen] = useState(false);
   // どのメモを削除しようとしているかを一時的に保存する
@@ -81,14 +83,17 @@ export default function MemoList({ filterHorseName }: { filterHorseName?: string
 
   // ダイアログで「はい」
   const handleConfirmDelete = async () => {
-    if (!targetId) return;
-
-    const deletedMemo = await handleDelete(targetId); // 削除したメモを受け取る
+    if (!targetId || isDeleting) return;
+    // 削除中フラグON
+    setIsDeleting(true);
+    // 削除したメモを受け取る
+    const deletedMemo = await handleDelete(targetId); 
 
     // 3秒後にダイアログを閉じてトースト表示
     setTimeout(() => {
       setConfirmOpen(false);
       setTargetId(null);
+      setIsDeleting(false); // 削除中フラグOFF
 
       enqueueSnackbar(
         deletedMemo?.horseName
@@ -310,6 +315,7 @@ export default function MemoList({ filterHorseName }: { filterHorseName?: string
       message="このメモを本当に削除しますか？"
       onClose={handleCancelDelete}
       onConfirm={handleConfirmDelete}
+      loading={isDeleting}
     />
   </Box>
 

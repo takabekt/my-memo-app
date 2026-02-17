@@ -9,6 +9,7 @@ type Props = {
   message?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  loading?: boolean;
 };
 
 export default function ConfirmDialog({
@@ -18,7 +19,8 @@ export default function ConfirmDialog({
   title = "確認",
   message = "本当に前の画面へ戻りますか？ 保存していない変更は失われます。",
   confirmLabel = "はい",
-  cancelLabel = "いいえ"
+  cancelLabel = "いいえ",
+  loading = false, // デフォルト値も追加
 }: Props) {
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="confirm-back-title">
@@ -27,8 +29,16 @@ export default function ConfirmDialog({
         <Typography>{message}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{cancelLabel}</Button>
-        <Button onClick={onConfirm} variant="contained" color="primary" autoFocus>
+        <Button onClick={onClose} disabled={loading}>
+          {cancelLabel}
+        </Button>
+        <Button
+          onClick={onConfirm}
+          variant="contained"
+          color="primary"
+          autoFocus
+          disabled={loading} 
+        >
           {confirmLabel}
         </Button>
       </DialogActions>
