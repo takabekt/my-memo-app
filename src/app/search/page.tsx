@@ -12,9 +12,12 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  IconButton,
+  Button
 } from "@mui/material";
 import Link from "next/link";
-import { Button } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
+
 
 type Memo = {
   id: string;
@@ -47,12 +50,12 @@ export default function SearchPage() {
     fetchHorseNames();
   }, []);
 
-  // 検索フィルター
+  // 検索フィルター　馬名順表示
   const filteredNames = horseNames
   .filter((name): name is string => typeof name === "string")
   .filter((name) =>
     name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ).sort((a, b) => a.localeCompare(b));
 
 
   return (
@@ -60,7 +63,6 @@ export default function SearchPage() {
       <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
         馬名で検索
       </Typography>
-
       <TextField
         label="馬名を入力"
         variant="outlined"
@@ -68,7 +70,24 @@ export default function SearchPage() {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         sx={{ mb: 3 }}
+        InputProps={{
+          endAdornment: searchQuery && (
+            <IconButton
+              onClick={() => setSearchQuery("")}
+              edge="end"
+              size="small"
+              aria-label="クリア"
+            >
+              <ClearIcon />
+            </IconButton>
+          ),
+        }}
       />
+      {/* 検索結果 */}
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        {filteredNames.length} 件の結果
+      </Typography>
+
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
         <Link href={`/mypage/new?from=/search`}>
             <Button variant="contained" color="primary">
@@ -76,23 +95,42 @@ export default function SearchPage() {
             </Button>
         </Link>
       </Box>
-
       <List>
         {filteredNames.map((name) => (
-          <ListItem key={name} disablePadding>
+          <ListItem key={name} disablePadding divider>
             <ListItemButton
               onClick={() =>
                 router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
               }
             >
-              <ListItemText primary={name} />
+              <ListItemText
+                primary={
+                  <span>
+                    {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
+                      part.toLowerCase() === searchQuery.toLowerCase() ? (
+                        <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
+                          {part}
+                        </span>
+                      ) : (
+                        part
+                      )
+                    )}
+                  </span>
+                }
+              />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-
       {filteredNames.length === 0 && (
-        <Typography color="text.secondary">該当する馬が見つかりません。</Typography>
+        <Box sx={{ textAlign: "center", mt: 4 }}>
+          <Typography variant="body1" color="text.secondary">
+            該当する馬が見つかりません。
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            入力を確認するか、新規登録してみましょう。
+          </Typography>
+        </Box>
       )}
     </Box>
   );
