@@ -57,7 +57,6 @@ export default function SearchPage() {
     name.toLowerCase().includes(searchQuery.toLowerCase())
   ).sort((a, b) => a.localeCompare(b));
 
-
   return (
     <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
       <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
@@ -95,33 +94,43 @@ export default function SearchPage() {
             </Button>
         </Link>
       </Box>
-      <List>
-        {filteredNames.map((name) => (
-          <ListItem key={name} disablePadding divider>
-            <ListItemButton
-              onClick={() =>
-                router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
-              }
-            >
-              <ListItemText
-                primary={
-                  <span>
-                    {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
-                      part.toLowerCase() === searchQuery.toLowerCase() ? (
-                        <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
-                          {part}
-                        </span>
-                      ) : (
-                        part
-                      )
-                    )}
-                  </span>
+      {/* スクロールで全件確認可能 */}
+      <Box
+        sx={{
+          maxHeight: "70vh",
+          overflowY: "auto",
+          mb: 2,
+          border: "1px solid #ccc",
+        }}
+      >
+        <List>
+          {filteredNames.map((name) => (
+            <ListItem key={name} disablePadding divider>
+              <ListItemButton
+                onClick={() =>
+                  router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
                 }
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+              >
+                <ListItemText
+                  primary={
+                    <span>
+                      {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
+                        part.toLowerCase() === searchQuery.toLowerCase() ? (
+                          <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
+                            {part}
+                          </span>
+                        ) : (
+                          part
+                        )
+                      )}
+                    </span>
+                  }
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
       {filteredNames.length === 0 && (
         <Box sx={{ textAlign: "center", mt: 4 }}>
           <Typography variant="body1" color="text.secondary">
