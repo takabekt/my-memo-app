@@ -176,7 +176,10 @@ export default function SearchPage() {
       {selectedNames.length > 0 && (
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" color="text.secondary">
-            選択中の馬（{selectedNames.length}頭）: {selectedNames.join(", ")}
+            選択中の馬（{selectedNames.length}頭）: {selectedNames
+              .slice()
+              .sort((a, b) => a.localeCompare(b)) // 名前順にソート
+              .join(", ")}
           </Typography>
         </Box>
       )}
