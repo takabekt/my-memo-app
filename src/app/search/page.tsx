@@ -117,7 +117,7 @@ export default function SearchPage() {
       {/* スクロールで全件確認可能 */}
       <Box
         sx={{
-          maxHeight: "60vh",
+          maxHeight: "55vh",
           overflowY: "auto",
           mb: 2,
           border: "1px solid #ccc",
