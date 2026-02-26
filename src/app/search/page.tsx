@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import ClearIcon from "@mui/icons-material/Clear";
-
+import { Checkbox } from "@mui/material";
 
 type Memo = {
   id: string;
@@ -29,6 +29,16 @@ export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [horseNames, setHorseNames] = useState<string[]>([]);
   const router = useRouter();
+  // チェックボックスの選択状態を管理
+  const [selectedNames, setSelectedNames] = useState<string[]>([]);
+  const handleToggle = (name: string) => {
+    setSelectedNames((prev) =>
+      prev.includes(name)
+        ? prev.filter((n) => n !== name)
+        : [...prev, name]
+    );
+  };
+
 
   useEffect(() => {
     const fetchHorseNames = async () => {
@@ -105,32 +115,42 @@ export default function SearchPage() {
       >
         <List>
           {filteredNames.map((name) => (
-            <ListItem key={name} disablePadding divider>
-              <ListItemButton
-                onClick={() =>
-                  router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
+          <ListItem key={name} disablePadding divider>
+            <ListItemButton onClick={() => handleToggle(name)}>
+              <Checkbox
+                edge="start"
+                checked={selectedNames.includes(name)}
+                tabIndex={-1}
+                disableRipple
+              />
+              <ListItemText
+                primary={
+                  <span>
+                    {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
+                      part.toLowerCase() === searchQuery.toLowerCase() ? (
+                        <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
+                          {part}
+                        </span>
+                      ) : (
+                        part
+                      )
+                    )}
+                  </span>
                 }
-              >
-                <ListItemText
-                  primary={
-                    <span>
-                      {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
-                        part.toLowerCase() === searchQuery.toLowerCase() ? (
-                          <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
-                            {part}
-                          </span>
-                        ) : (
-                          part
-                        )
-                      )}
-                    </span>
-                  }
-                />
-              </ListItemButton>
-            </ListItem>
+              />
+            </ListItemButton>
+          </ListItem>
           ))}
         </List>
       </Box>
+      {/* 選択済みの馬名を表示 */}
+      {selectedNames.length > 0 && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            選択中の馬: {selectedNames.join(", ")}
+          </Typography>
+        </Box>
+      )}
       {filteredNames.length === 0 && (
         <Box sx={{ textAlign: "center", mt: 4 }}>
           <Typography variant="body1" color="text.secondary">
