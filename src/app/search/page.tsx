@@ -126,16 +126,24 @@ export default function SearchPage() {
         <List>
           {filteredNames.map((name) => (
           <ListItem key={name} disablePadding divider>
-            <ListItemButton dense onClick={() => handleToggle(name)}>
+            <ListItemButton dense>
               <Checkbox
                 edge="start"
                 checked={selectedNames.includes(name)}
-                tabIndex={-1}
-                disableRipple
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggle(name);
+                }}
+                size="medium"
               />
               <ListItemText
                 primary={
-                  <span>
+                  <span
+                    onClick={() =>
+                      router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
+                    }
+                    style={{ cursor: "pointer", fontSize: "1.2rem" }}
+                  >
                     {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
                       part.toLowerCase() === searchQuery.toLowerCase() ? (
                         <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
