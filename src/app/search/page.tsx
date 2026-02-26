@@ -125,8 +125,13 @@ export default function SearchPage() {
       >
         <List>
           {filteredNames.map((name) => (
-          <ListItem key={name} disablePadding divider>
-            <ListItemButton dense>
+          <ListItem
+            key={name}
+            disablePadding
+            divider
+            sx={{ py: 0 }} 
+          >
+            <ListItemButton dense sx={{ py: 0 }}> 
               <Checkbox
                 edge="start"
                 checked={selectedNames.includes(name)}
@@ -134,28 +139,30 @@ export default function SearchPage() {
                   e.stopPropagation();
                   handleToggle(name);
                 }}
-                size="medium"
+                size="large"
               />
-              <ListItemText
-                primary={
-                  <span
-                    onClick={() =>
-                      router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
-                    }
-                    style={{ cursor: "pointer", fontSize: "1.2rem" }}
-                  >
-                    {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
-                      part.toLowerCase() === searchQuery.toLowerCase() ? (
-                        <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
-                          {part}
-                        </span>
-                      ) : (
-                        part
-                      )
-                    )}
-                  </span>
-                }
-              />
+              <Box sx={{ ml: 4, flexGrow: 1 }}>
+                <ListItemText
+                  primary={
+                    <span
+                      onClick={() =>
+                        router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
+                      }
+                      style={{ cursor: "pointer", fontSize: "1.2rem" }}
+                    >
+                      {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
+                        part.toLowerCase() === searchQuery.toLowerCase() ? (
+                          <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
+                            {part}
+                          </span>
+                        ) : (
+                          part
+                        )
+                      )}
+                    </span>
+                  }
+                />
+              </Box>
             </ListItemButton>
           </ListItem>
           ))}
