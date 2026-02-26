@@ -38,8 +38,10 @@ export default function SearchPage() {
         : [...prev, name]
     );
   };
-
-
+  // クリアボタン関数
+  const clearSelection = () => {
+    setSelectedNames([]);
+  };
   useEffect(() => {
     const fetchHorseNames = async () => {
       const user = auth.currentUser;
@@ -96,12 +98,20 @@ export default function SearchPage() {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
         {filteredNames.length} 件の結果
       </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Button
+          onClick={clearSelection}
+          variant="contained"
+          color="primary"
+          disabled={selectedNames.length === 0}
+        >
+          選択クリア
+        </Button>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
         <Link href={`/mypage/new?from=/search`}>
-            <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary">
             新規登録
-            </Button>
+          </Button>
         </Link>
       </Box>
       {/* スクロールで全件確認可能 */}
@@ -143,11 +153,11 @@ export default function SearchPage() {
           ))}
         </List>
       </Box>
-      {/* 選択済みの馬名を表示 */}
+      {/* 選択済みの馬を表示 */}
       {selectedNames.length > 0 && (
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" color="text.secondary">
-            選択中の馬: {selectedNames.join(", ")}
+            選択中の馬（{selectedNames.length}頭）: {selectedNames.join(", ")}
           </Typography>
         </Box>
       )}
