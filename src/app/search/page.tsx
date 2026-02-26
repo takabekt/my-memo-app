@@ -126,7 +126,7 @@ export default function SearchPage() {
         <List>
           {filteredNames.map((name) => (
           <ListItem key={name} disablePadding divider>
-            <ListItemButton onClick={() => handleToggle(name)}>
+            <ListItemButton dense onClick={() => handleToggle(name)}>
               <Checkbox
                 edge="start"
                 checked={selectedNames.includes(name)}
