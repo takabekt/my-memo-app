@@ -117,7 +117,7 @@ export default function SearchPage() {
       {/* スクロールで全件確認可能 */}
       <Box
         sx={{
-          maxHeight: "50vh",
+          maxHeight: "40vh",
           overflowY: "auto",
           mb: 2,
           border: "1px solid #ccc",
@@ -139,7 +139,11 @@ export default function SearchPage() {
                   e.stopPropagation();
                   handleToggle(name);
                 }}
-                size="large"
+                sx={{
+                  '& svg': {
+                    fontSize: 40, 
+                  }
+                }}
               />
               <Box sx={{ ml: 4, flexGrow: 1 }}>
                 <ListItemText
