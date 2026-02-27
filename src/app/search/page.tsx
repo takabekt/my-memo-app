@@ -32,12 +32,17 @@ export default function SearchPage() {
   // チェックボックスの選択状態を管理
   const [selectedNames, setSelectedNames] = useState<string[]>([]);
   const handleToggle = (name: string) => {
-    setSelectedNames((prev) =>
-      prev.includes(name)
-        ? prev.filter((n) => n !== name)
-        : [...prev, name]
-    );
+    setSelectedNames((prev) => {
+      const isSelected = prev.includes(name);
+
+      if (isSelected) {
+        return prev.filter((n) => n !== name);
+      }
+
+      return [...prev, name];
+    });
   };
+
   // クリアボタン関数
   const clearSelection = () => {
     setSelectedNames([]);
@@ -139,6 +144,10 @@ export default function SearchPage() {
                   e.stopPropagation();
                   handleToggle(name);
                 }}
+                disabled={
+                  // 最大18頭選択
+                  selectedNames.length >= 18 && !selectedNames.includes(name)
+                }
                 sx={{
                   '& svg': {
                     fontSize: 40, 
