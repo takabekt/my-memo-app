@@ -103,7 +103,16 @@ export default function SearchPage() {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
         {filteredNames.length} 件の結果
       </Typography>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 1,
+          mb: 2,
+        }}
+      >
         <Button
           onClick={clearSelection}
           variant="contained"
@@ -113,11 +122,25 @@ export default function SearchPage() {
           選択クリア
         </Button>
 
-        <Link href={`/mypage/new?from=/search`}>
-          <Button variant="contained" color="primary">
-            新規登録
-          </Button>
-        </Link>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Link
+            href={`/review/all?horses=${selectedNames.map(encodeURIComponent).join(",")}`}
+            passHref
+          >
+            <Button
+              variant="contained"
+              color="success"
+              disabled={selectedNames.length === 0}
+            >
+              全頭回顧ビューへ
+            </Button>
+          </Link>
+          <Link href={`/mypage/new?from=/search`} passHref>
+            <Button variant="contained" color="primary">
+              新規登録
+            </Button>
+          </Link>
+        </Box>
       </Box>
       {/* スクロールで全件確認可能 */}
       <Box

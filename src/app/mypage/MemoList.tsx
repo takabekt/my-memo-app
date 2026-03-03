@@ -30,7 +30,13 @@ type Memo = {
 };
 
 
-export default function MemoList({ filterHorseName }: { filterHorseName?: string }) {
+export default function MemoList({
+   filterHorseName,
+  showActions = true,
+ }: { 
+  filterHorseName?: string;
+  showActions?: boolean;
+ }) {
   const [memos, setMemos] = useState<Memo[]>([]);
 
   const [isDeleting, setIsDeleting] = useState(false);
@@ -275,48 +281,52 @@ export default function MemoList({ filterHorseName }: { filterHorseName?: string
           </Box>
 
           {/* ボタンを横並びに */}
-          <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-            <Button
-              variant="outlined"
-              color="error"
-              sx={{
-                minWidth: { xs: 70, sm: 80 },
-                fontSize: { xs: "0.75rem", sm: "0.9rem" },
-                py: { xs: 0.5, sm: 1 },
-              }}
-              // 確認ダイアログを開く
-              onClick={() => handleClickDelete(memo.id)}
-            >
-              削除
-            </Button>
-            <Link
-              href={`/mypage/edit/${memo.id}?from=${encodeURIComponent(`/horse/${encodeURIComponent(memo.horseName)}`)}`}
-            >
+          {showActions && (
+            <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
               <Button
-                variant="contained"
+                variant="outlined"
+                color="error"
                 sx={{
                   minWidth: { xs: 70, sm: 80 },
                   fontSize: { xs: "0.75rem", sm: "0.9rem" },
                   py: { xs: 0.5, sm: 1 },
                 }}
+                // 確認ダイアログを開く
+                onClick={() => handleClickDelete(memo.id)}
               >
-                編集
+                削除
               </Button>
-            </Link>
-          </Box>
+              <Link
+                href={`/mypage/edit/${memo.id}?from=${encodeURIComponent(`/horse/${encodeURIComponent(memo.horseName)}`)}`}
+              >
+                <Button
+                  variant="contained"
+                  sx={{
+                    minWidth: { xs: 70, sm: 80 },
+                    fontSize: { xs: "0.75rem", sm: "0.9rem" },
+                    py: { xs: 0.5, sm: 1 },
+                  }}
+                >
+                  編集
+                </Button>
+              </Link>
+            </Box>
+          )}
 
         </Box>
       ))
     )}
     {/* 削除確認ダイアログ */}
-    <ConfirmDialog
-      open={confirmOpen}
-      title="削除の確認"
-      message="このメモを本当に削除しますか？"
-      onClose={handleCancelDelete}
-      onConfirm={handleConfirmDelete}
-      loading={isDeleting}
-    />
+    {showActions && (
+      <ConfirmDialog
+        open={confirmOpen}
+        title="削除の確認"
+        message="このメモを本当に削除しますか？"
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        loading={isDeleting}
+      />
+    )}
   </Box>
 
   );
