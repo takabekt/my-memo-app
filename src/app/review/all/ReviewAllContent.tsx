@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Box, Typography, Paper } from '@mui/material';
 import MemoList from '@/app/mypage/MemoList';
@@ -8,6 +9,7 @@ export default function ReviewAllContent() {
   const searchParams = useSearchParams();
   const horseQuery = searchParams.get('horses');
   const horseNames = horseQuery ? horseQuery.split(',').map(decodeURIComponent) : [];
+  const queryString = searchParams.toString();
 
   if (horseNames.length === 0) {
     return (
@@ -37,9 +39,24 @@ export default function ReviewAllContent() {
             borderTop: '4px solid #4caf50',
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-            {name}
-          </Typography>
+            <Typography
+                variant="h6"
+                component={Link}
+                // 一覧画面に遷移
+                href={`/horse/${encodeURIComponent(name)}?from=${encodeURIComponent(`/review/all?${queryString}`)}`}
+                sx={{
+                    fontWeight: 'bold',
+                    mb: 2,
+                    color: '#1976d2',
+                    textDecoration: 'none',
+                    '&:hover': {
+                    textDecoration: 'underline',
+                    },
+                    cursor: 'pointer',
+                }}
+                >
+                {name}
+            </Typography>
           <MemoList filterHorseName={name} showActions={false} />
         </Paper>
       ))}
