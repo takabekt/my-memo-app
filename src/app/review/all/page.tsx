@@ -1,14 +1,12 @@
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Box, Typography, Paper, Button } from '@mui/material';
-import MemoList from '@/app/mypage/MemoList';
+import { Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import { Box, Typography, Button } from '@mui/material';
+import ReviewAllContent from './ReviewAllContent';
 
 export default function ReviewAllPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const horseQuery = searchParams.get('horses');
-  const horseNames = horseQuery ? horseQuery.split(',').map(decodeURIComponent) : [];
 
   return (
     <Box sx={{ px: 2, py: 4 }}>
@@ -27,32 +25,10 @@ export default function ReviewAllPage() {
         👉 横にスワイプして他の馬を見られます
       </Typography>
 
-      <Box
-        sx={{
-          display: 'flex',
-          overflowX: 'auto',
-          gap: 2,
-          pb: 2,
-        }}
-      >
-        {horseNames.map((name) => (
-          <Paper
-            key={name}
-            elevation={3}
-            sx={{
-              minWidth: 300,
-              flex: '0 0 auto',
-              p: 2,
-              borderTop: '4px solid #4caf50',
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-              {name}
-            </Typography>
-            <MemoList filterHorseName={name} showActions={false} />
-          </Paper>
-        ))}
-      </Box>
+      {/* 🔄 Suspenseでラップ */}
+      <Suspense fallback={<Typography align="center">読み込み中...</Typography>}>
+        <ReviewAllContent />
+      </Suspense>
     </Box>
   );
 }
