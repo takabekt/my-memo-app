@@ -8,6 +8,8 @@ import { Box, Typography, Button } from "@mui/material";
 import { fieldSx, dateFieldSx } from "@/utils/fieldSx"; 
 import { useSnackbar } from "notistack";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useAuth } from '@/hooks/useAuth';
+import NextNoteBlock from '@/components/NextNote';
 
 // 型定義
 type Memo = {
@@ -28,24 +30,21 @@ type Memo = {
   horseWeight: string;
   createdAt: any; // Firestore Timestamp
 };
-
-
 export default function MemoList({
-   filterHorseName,
+  filterHorseName,
   showActions = true,
+  editableNextNote = false,
  }: { 
   filterHorseName?: string;
   showActions?: boolean;
+  editableNextNote?: boolean;
  }) {
   const [memos, setMemos] = useState<Memo[]>([]);
-
   const [isDeleting, setIsDeleting] = useState(false);
-
   // ダイアログ表示管理
   const [confirmOpen, setConfirmOpen] = useState(false);
   // どのメモを削除しようとしているかを一時的に保存する
   const [targetId, setTargetId] = useState<string | null>(null);
-
 
   // 一覧取得
   useEffect(() => {
@@ -123,9 +122,9 @@ export default function MemoList({
 
   // 削除処理
   const { enqueueSnackbar } = useSnackbar();
+  const user = auth.currentUser;
   const handleDelete = async (id: string): Promise<Memo | null> => {
-    const user = auth.currentUser;
-    if (!user) return null;
+  if (!user) return null;
 
     // 削除対象のメモを取得（トースト用に使う）
     const deleted = memos.find((memo) => memo.id === id) || null;
@@ -137,7 +136,6 @@ export default function MemoList({
 
     return deleted;
   };
-
   return (
   // 一覧を中央揃えにする
   <Box
@@ -148,6 +146,14 @@ export default function MemoList({
     mt: 4,
   }}
   >
+    {/*次走メモ*/}
+    {filterHorseName && user && (
+      <NextNoteBlock
+        userId={user.uid}
+        horseName={filterHorseName}
+        editable={editableNextNote}
+      />
+    )}
       {memos.length === 0 ? (
         <Typography color="text.secondary">
           {filterHorseName

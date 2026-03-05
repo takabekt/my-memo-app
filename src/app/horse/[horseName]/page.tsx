@@ -51,7 +51,11 @@ export default function HorseMemoPage() {
       </Box>
 
 
-      <MemoList filterHorseName={decodedHorseName} />
+      <MemoList 
+        filterHorseName={decodedHorseName} 
+        showActions={true}
+        editableNextNote={true}
+      />
     </Box>
   );
 }

@@ -57,7 +57,11 @@ export default function ReviewAllContent() {
                 >
                 {name}
             </Typography>
-          <MemoList filterHorseName={name} showActions={false} />
+          <MemoList 
+            filterHorseName={name} 
+            showActions={false} 
+            editableNextNote={false}
+          />
         </Paper>
       ))}
     </Box>
