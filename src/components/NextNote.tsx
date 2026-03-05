@@ -65,14 +65,27 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
           </>
         ) : (
           <>
-            <Typography sx={{ whiteSpace: 'pre-wrap', mt: 1 }}>
+            <Typography
+              sx={{
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                mt: 1,
+              }}
+            >
               {note || 'まだ次走メモはありません。'}
             </Typography>
+
             <Button onClick={() => setEditing(true)} sx={{ mt: 1 }} size="small">編集</Button>
           </>
         )
       ) : (
-        <Typography sx={{ whiteSpace: 'pre-wrap', mt: 1 }}>
+        <Typography
+          sx={{
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word', 
+            mt: 1,
+          }}
+        >
           {note || 'まだ次走メモはありません。'}
         </Typography>
       )}

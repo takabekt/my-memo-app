@@ -280,6 +280,7 @@ export default function MemoList({
                 fontSize: { xs: "0.9rem", sm: "1rem" },
                 lineHeight: 1.6,
                 whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
               }}
             >
               回顧：{memo.review}
