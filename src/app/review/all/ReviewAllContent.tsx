@@ -34,9 +34,12 @@ export default function ReviewAllContent() {
           elevation={3}
           sx={{
             minWidth: 300,
+            maxWidth: 400,
+            width: '100%',
             flex: '0 0 auto',
             p: 2,
             borderTop: '4px solid #4caf50',
+            wordBreak: 'break-word', 
           }}
         >
             <Typography

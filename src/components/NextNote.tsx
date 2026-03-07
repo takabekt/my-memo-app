@@ -44,7 +44,17 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
   if (loading) return <Typography color="text.secondary">読み込み中...</Typography>;
 
   return (
-    <Box sx={{ mb: 2, p: 2, bgcolor: '#f9fbe7', borderRadius: 1 }}>
+    <Box
+      sx={{
+        mb: 2,
+        p: 2,
+        bgcolor: '#f9fbe7',
+        borderRadius: 1,
+        maxWidth: 600, 
+        width: '100%',
+        overflow: 'hidden',
+      }}
+    >
       <Typography variant="subtitle2" color="text.secondary">次走メモ（総括）</Typography>
 
       {editable ? (
@@ -69,6 +79,7 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
               sx={{
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
+                overflowWrap: 'break-word',
                 mt: 1,
               }}
             >
@@ -79,15 +90,26 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
           </>
         )
       ) : (
-        <Typography
+        <Box
           sx={{
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word', 
-            mt: 1,
+            maxWidth: 600,
+            width: '100%',
+            overflow: 'hidden',
           }}
         >
-          {note || 'まだ次走メモはありません。'}
-        </Typography>
+          <Typography
+            sx={{
+              display: 'block',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              fontSize: '0.95rem',
+              lineHeight: 1.6,
+            }}
+          >
+            {note || 'まだ次走メモはありません。'}
+          </Typography>
+        </Box>
       )}
     </Box>
   );
