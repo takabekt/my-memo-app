@@ -15,7 +15,7 @@ export default function LoginPage() {
   const handleLogin = async () => {
     try {
       // Googleのログイン画面をポップアップで開いて、ログイン
-      // ✅ ログイン成功後に /mypage に移動！
+      // ✅ ログイン成功後に /search に移動！
       await signInWithPopup(auth, provider);
       
     } catch (error) {
