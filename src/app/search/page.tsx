@@ -22,67 +22,68 @@ import { Checkbox } from "@mui/material";
 type Memo = {
   id: string;
   horseName: string;
-  // 他のプロパティは後で必要に応じて追加！
 };
-
+// 検索画面
 export default function SearchPage() {
+  // 検索ボックスに入力された文字列を管理
   const [searchQuery, setSearchQuery] = useState("");
+  //  Firebaseから取得した馬名の一覧を管理
   const [horseNames, setHorseNames] = useState<string[]>([]);
   const router = useRouter();
   // チェックボックスの選択状態を管理
   const [selectedNames, setSelectedNames] = useState<string[]>([]);
+
+  // チェックボックスの選択処理
   const handleToggle = (name: string) => {
     setSelectedNames((prev) => {
       const isSelected = prev.includes(name);
-
       if (isSelected) {
         return prev.filter((n) => n !== name);
       }
-
       return [...prev, name];
     });
   };
-
   // クリアボタン関数
   const clearSelection = () => {
     setSelectedNames([]);
   };
   useEffect(() => {
+    // Firebaseから馬名を取得
     const fetchHorseNames = async () => {
       const user = auth.currentUser;
       if (!user) return;
-
+      // ログイン中ユーザーの「raceReviews」コレクションからメモを取得
       const ref = collection(db, "users", user.uid, "raceReviews");
       const snapshot = await getDocs(ref);
       const memos: Memo[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<Memo, "id">),
       }));
-
       // 馬名だけを抽出して重複を除外
       const names = Array.from(new Set(memos.map((memo) => memo.horseName)));
       setHorseNames(names);
     };
-
     fetchHorseNames();
   }, []);
-
-  // 検索フィルター　馬名順表示
+  // 検索フィルター処理
+  // 馬名順で取得
   const filteredNames = horseNames
-  .filter((name): name is string => typeof name === "string")
-  .filter((name) =>
-    name.toLowerCase().includes(searchQuery.toLowerCase())
+    .filter((name): name is string => typeof name === "string")
+    .filter((name) =>
+      name.toLowerCase().includes(searchQuery.toLowerCase())
   ).sort((a, b) => a.localeCompare(b));
 
   return (
+    // 画面全体のコンテナ　中央寄せで、幅を600pxに設定
     <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
+      {/* 検索ボックス */}
       <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
         馬名で検索
       </Typography>
       <TextField
         label="馬名を入力"
-        variant="outlined"
-        fullWidth
+        variant="outlined" // 外枠を設定
+        fullWidth // 親の幅に合わせて横幅を設定
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         sx={{ mb: 3 }}
@@ -105,7 +106,7 @@ export default function SearchPage() {
       </Typography>
       <Box
         sx={{
-          display: "flex",
+          display: "flex", // ボタンを横並び
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
@@ -113,6 +114,7 @@ export default function SearchPage() {
           mb: 2,
         }}
       >
+        {/* クリアボタン */}
         <Button
           onClick={clearSelection}
           variant="contained"
@@ -121,20 +123,22 @@ export default function SearchPage() {
         >
           選択クリア
         </Button>
-
         <Box sx={{ display: "flex", gap: 1 }}>
+          {/* 全頭回顧ビューへボタン */}
           <Link
+            // 選択した馬名をクエリに設定
             href={`/review/all?horses=${selectedNames.map(encodeURIComponent).join(",")}`}
             passHref
           >
             <Button
-              variant="contained"
+              variant="contained" // 塗りつぶし
               color="success"
               disabled={selectedNames.length === 0}
             >
               全頭回顧ビューへ
             </Button>
           </Link>
+          {/* 新規登録ボタン */}
           <Link href={`/mypage/new?from=/search`} passHref>
             <Button variant="contained" color="primary">
               新規登録
@@ -151,6 +155,7 @@ export default function SearchPage() {
           border: "1px solid #ccc",
         }}
       >
+        {/* 馬名リスト */}
         <List>
           {filteredNames.map((name) => (
           <ListItem
