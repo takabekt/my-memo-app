@@ -9,13 +9,14 @@ import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useSnackbar } from "notistack";
 
-// 編集ページ
+// 編集画面
 export default function EditPage() {
-  // idを受け取る
+  // URLからIDを取得
   const params = useParams();
   const docId = Array.isArray(params.id) ? params.id[0] : params.id; 
   const searchParams = useSearchParams();
   const router = useRouter();
+  // URLから遷移元のfromを取得
   const from = searchParams.get("from");
 
   // 入力値
@@ -41,8 +42,10 @@ export default function EditPage() {
 
   // 戻る処理
   const handleConfirmBack = () => {
-  setOpenConfirm(false);
-  router.push(from || "/search"); 
+   // 確認ダイアログを閉じる
+   setOpenConfirm(false);
+   // 遷移もとに戻る or 遷移元の指定がなければ検索画面に遷移
+   router.push(from || "/search"); 
   };
 
   // 距離データ（MemoForm と同じ）
@@ -58,22 +61,18 @@ export default function EditPage() {
     阪神: { 芝: [1200, 1400, 1600, 1800, 2000, 2200, 2400], ダート: [1200, 1400, 1800, 2000] },
     小倉: { 芝: [1200, 1700, 1800, 2000], ダート: [1000, 1700] },
   };
-
+  // 距離の選択肢をコースと馬場から動的に生成
   const availableDistances =
     raceCourse && surface ? distanceData[raceCourse]?.[surface] ?? [] : [];
-
   // Firestore からデータ取得
   useEffect(() => {
     const fetchData = async () => {
       const user = auth.currentUser;
       if (!user) return;
-
       const ref = doc(db, "users", user.uid, "raceReviews", docId);
       const snapshot = await getDoc(ref);
-
       if (snapshot.exists()) {
         const data = snapshot.data();
-
         setHorseName(data.horseName);
         setRaceName(data.raceName);
         setDate(data.date);
@@ -90,17 +89,14 @@ export default function EditPage() {
         setHorseWeight(data.horseWeight);
       }
     };
-
     fetchData();
   }, [docId]);
   
-
   // 更新処理
   const { enqueueSnackbar } = useSnackbar();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const newErrors = {
       horseName: !horseName,
       raceName: !raceName,
@@ -117,21 +113,16 @@ export default function EditPage() {
       weight: !weight,
       horseWeight: !horseWeight,
     };
-
     setErrors(newErrors);
-
     if (Object.values(newErrors).includes(true)) {
       alert("未入力の項目があります");
       return;
     }
-
     const user = auth.currentUser;
     if (!user) return;
-
     // 二重送信防止
     if (isSubmitting) return; 
     setIsSubmitting(true);  // 更新中フラグON
-
     const ref = doc(db, "users", user.uid, "raceReviews", docId);
     // Firestore のデータを更新
     await updateDoc(ref, {
@@ -150,7 +141,6 @@ export default function EditPage() {
       weight,
       horseWeight,
     });
-
     setTimeout(() => {
       // ✅ トースト通知を表示
       enqueueSnackbar("メモを更新しました", { variant: "success" });
@@ -161,7 +151,6 @@ export default function EditPage() {
       setIsSubmitting(false);
     }, 3000); // 3秒後に遷移
   };
-
   return (
     <Box
       component="form"
@@ -175,6 +164,7 @@ export default function EditPage() {
         pb: 6,
       }}
     >
+      {/*戻るボタン */}
       <Button
         variant="outlined"
         onClick={(e) => { e.preventDefault(); setOpenConfirm(true); }}
@@ -187,7 +177,6 @@ export default function EditPage() {
       >
         戻る
       </Button>
-
       {/* 以下、MemoForm と同じ TextField 群 */}
       <TextField
         label="馬名"
@@ -258,7 +247,6 @@ export default function EditPage() {
           </MenuItem>
         ))}
       </TextField>
-
       <TextField
         select
         label="馬場タイプ"
@@ -279,7 +267,6 @@ export default function EditPage() {
         <MenuItem value="芝">芝</MenuItem>
         <MenuItem value="ダート">ダート</MenuItem>
       </TextField>
-
       <TextField
         select
         label="コース方向"
@@ -297,7 +284,6 @@ export default function EditPage() {
         <MenuItem value="右回り">右回り</MenuItem>
         <MenuItem value="左回り">左回り</MenuItem>
       </TextField>
-
       <TextField
         select
         label="距離（m）"
@@ -319,7 +305,6 @@ export default function EditPage() {
           </MenuItem>
         ))}
       </TextField>
-
       <TextField
         select
         label="馬場状態"
@@ -339,7 +324,6 @@ export default function EditPage() {
         <MenuItem value="重">重🌧</MenuItem>
         <MenuItem value="不良">不良⛈</MenuItem>
       </TextField>
-
       <TextField
         label="馬番"
         type="number"
@@ -351,7 +335,6 @@ export default function EditPage() {
         helperText={errors.horseNumber ? "必須項目です" : ""}
         sx={fieldSx}
       />
-
       <TextField
         label="騎手"
         fullWidth
@@ -362,7 +345,6 @@ export default function EditPage() {
         helperText={errors.jockey ? "必須項目です" : ""}
         sx={fieldSx}
       />
-
       <TextField
         label="斤量（kg）"
         type="number"
@@ -374,7 +356,6 @@ export default function EditPage() {
         helperText={errors.weight ? "必須項目です" : ""}
         sx={fieldSx}
       />
-
       <TextField
         label="馬体重（kg）"
         type="number"
@@ -386,7 +367,6 @@ export default function EditPage() {
         helperText={errors.horseWeight ? "必須項目です" : ""}
         sx={fieldSx}
       />
-
       <TextField
         label="回顧"
         fullWidth
@@ -402,7 +382,7 @@ export default function EditPage() {
         lineHeight: 1.6
       }}
       />
-
+      {/* 更新ボタン */}
       <Button type="submit" variant="contained" sx={{
         mt: 2,
         fontSize: { xs: "0.9rem", sm: "1rem" },

@@ -3,9 +3,10 @@
 import MemoForm from "../../../components/MemoForm";
 import AuthGuard from "../../../components/AuthGuard";
 import { Typography } from "@mui/material";
-
+// 新規登録画面
 export default function NewMemoPage() {
   return (
+    // ログインしているユーザーだけに表示される
     <AuthGuard>
       <Typography
         variant="h5"
@@ -19,7 +20,7 @@ export default function NewMemoPage() {
       >
         新規レース回顧
       </Typography>
-
+      {/*メモ入力フォーム */}
       <MemoForm />
     </AuthGuard>
   );

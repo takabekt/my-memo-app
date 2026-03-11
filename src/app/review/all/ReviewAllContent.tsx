@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Box, Typography, Paper } from '@mui/material';
 import MemoList from '@/app/mypage/MemoList';
-
+// 選択した馬のメモコンポーネント
 export default function ReviewAllContent() {
+  // クエリパラメータから馬名を取得
   const searchParams = useSearchParams();
   const horseQuery = searchParams.get('horses');
   const horseNames = horseQuery ? horseQuery.split(',').map(decodeURIComponent) : [];
   const queryString = searchParams.toString();
-
+  // 馬が選ばれていない時の表示
   if (horseNames.length === 0) {
     return (
       <Typography color="text.secondary" align="center">
@@ -18,7 +19,7 @@ export default function ReviewAllContent() {
       </Typography>
     );
   }
-
+  // 横スクロールで馬ごとのメモを表示
   return (
     <Box
       sx={{
@@ -45,7 +46,7 @@ export default function ReviewAllContent() {
             <Typography
                 variant="h6"
                 component={Link}
-                // 一覧画面に遷移
+                // 馬名をクリックすると、その馬のメモ一覧画面に遷移
                 href={`/horse/${encodeURIComponent(name)}?from=${encodeURIComponent(`/review/all?${queryString}`)}`}
                 sx={{
                     fontWeight: 'bold',
@@ -60,10 +61,11 @@ export default function ReviewAllContent() {
                 >
                 {name}
             </Typography>
+          {/*メモ一覧 */}
           <MemoList 
             filterHorseName={name} 
-            showActions={false} 
-            editableNextNote={false}
+            showActions={false} // メモの編集・削除ボタンを非表示
+            editableNextNote={false} // 次走メモの編集・削除ボタンを非表示
           />
         </Paper>
       ))}

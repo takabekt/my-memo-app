@@ -8,9 +8,8 @@ import { Box, Typography, Button } from "@mui/material";
 import { fieldSx, dateFieldSx } from "@/utils/fieldSx"; 
 import { useSnackbar } from "notistack";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { useAuth } from '@/hooks/useAuth';
 import NextNoteBlock from '@/components/NextNote';
-
+// 対象の馬のメモ一覧コンポーネント
 // 型定義
 type Memo = {
   id: string;
@@ -28,7 +27,7 @@ type Memo = {
   jockey: string;
   weight: string;
   horseWeight: string;
-  createdAt: any; // Firestore Timestamp
+  createdAt: any;
 };
 export default function MemoList({
   filterHorseName,
@@ -39,14 +38,16 @@ export default function MemoList({
   showActions?: boolean;
   editableNextNote?: boolean;
  }) {
+  // 表示するメモの一覧を管理
   const [memos, setMemos] = useState<Memo[]>([]);
+  // 削除中かを管理(2重押下防止)
   const [isDeleting, setIsDeleting] = useState(false);
   // ダイアログ表示管理
   const [confirmOpen, setConfirmOpen] = useState(false);
   // どのメモを削除しようとしているかを一時的に保存する
   const [targetId, setTargetId] = useState<string | null>(null);
 
-  // 一覧取得
+  // Firestoreからメモ一覧を取得
   useEffect(() => {
     const fetchData = async () => {
       const user = auth.currentUser;
@@ -59,13 +60,11 @@ export default function MemoList({
         id: doc.id,
         ...(doc.data() as Omit<Memo, "id">),
       }));
-
       // 🔽 日付の新しい順にソート（降順）
       list.sort((a, b) => {
         return new Date(b.date).getTime() - new Date(a.date).getTime();
       });
-
-      // 🔍 馬名でフィルター（渡されていれば）
+      // 🔍 馬名でフィルター
       const filtered = filterHorseName
         ? list.filter(
             (memo) =>
@@ -73,19 +72,18 @@ export default function MemoList({
               memo.horseName.trim().toLowerCase() === filterHorseName.trim().toLowerCase()
           )
         : list;
-
+      // 結果をmemosにセット
       setMemos(filtered);
     };
-
     fetchData();
     }, [filterHorseName]);
 
   // 削除ボタン押下時
   const handleClickDelete = (id: string) => {
     setTargetId(id);
+    // 確認ダイアログを開く
     setConfirmOpen(true);
   };
-
   // ダイアログで「はい」
   const handleConfirmDelete = async () => {
     if (!targetId || isDeleting) return;
@@ -93,13 +91,11 @@ export default function MemoList({
     setIsDeleting(true);
     // 削除したメモを受け取る
     const deletedMemo = await handleDelete(targetId); 
-
     // 3秒後にダイアログを閉じてトースト表示
     setTimeout(() => {
       setConfirmOpen(false);
       setTargetId(null);
       setIsDeleting(false); // 削除中フラグOFF
-
       enqueueSnackbar(
         deletedMemo?.horseName
           ? `「${deletedMemo.horseName}」のメモを削除しました`
@@ -112,28 +108,22 @@ export default function MemoList({
       );
     }, 3000);
   };
-
-
   // ダイアログで「キャンセル」
   const handleCancelDelete = () => {
     setConfirmOpen(false);
     setTargetId(null);
   };
-
   // 削除処理
   const { enqueueSnackbar } = useSnackbar();
   const user = auth.currentUser;
   const handleDelete = async (id: string): Promise<Memo | null> => {
   if (!user) return null;
-
     // 削除対象のメモを取得（トースト用に使う）
     const deleted = memos.find((memo) => memo.id === id) || null;
-
     const target = doc(db, "users", user.uid, "raceReviews", id);
     await deleteDoc(target);
     // 削除後に一覧を更新
     setMemos((prev) => prev.filter((memo) => memo.id !== id));
-
     return deleted;
   };
   return (
@@ -183,7 +173,6 @@ export default function MemoList({
           >
             {memo.raceName}
           </Typography>
-
           {/* 日付 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>📅</Typography>
@@ -191,7 +180,6 @@ export default function MemoList({
               日付：{memo.date}
             </Typography>
           </Box>
-
           {/* 競馬場 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏇</Typography>
@@ -199,7 +187,6 @@ export default function MemoList({
               競馬場：{memo.raceCourse}
             </Typography>
           </Box>
-
           {/* コース方向 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>↩</Typography>
@@ -207,7 +194,6 @@ export default function MemoList({
               コース方向：{memo.courseDirection}
             </Typography>
           </Box>
-
           {/* 馬場 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🌱</Typography>
@@ -215,7 +201,6 @@ export default function MemoList({
               馬場：{memo.surface}
             </Typography>
           </Box>
-
           {/* 距離 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>📏</Typography>
@@ -223,7 +208,6 @@ export default function MemoList({
               距離：{memo.distance}m
             </Typography>
           </Box>
-
           {/* 馬場状態 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🟫</Typography>
@@ -231,7 +215,6 @@ export default function MemoList({
               馬場状態：{memo.trackCondition}
             </Typography>
           </Box>
-
           {/* 馬番 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐎</Typography>
@@ -239,7 +222,6 @@ export default function MemoList({
               馬番：{memo.horseNumber}
             </Typography>
           </Box>
-
           {/* 騎手 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>👤</Typography>
@@ -247,7 +229,6 @@ export default function MemoList({
               騎手：{memo.jockey}
             </Typography>
           </Box>
-
           {/* 斤量 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>⚖</Typography>
@@ -255,7 +236,6 @@ export default function MemoList({
               斤量：{memo.weight}kg
             </Typography>
           </Box>
-
           {/* 馬体重 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐴</Typography>
@@ -263,7 +243,6 @@ export default function MemoList({
               馬体重：{memo.horseWeight}kg
             </Typography>
           </Box>
-
           {/* 着順 */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏁</Typography>
@@ -271,7 +250,6 @@ export default function MemoList({
               着順：{memo.rank}着
             </Typography>
           </Box>
-
           {/* 回顧 */}
           <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mt: 1 }}>
             <Typography sx={{ width: "1.4em", textAlign: "center" }}>📝</Typography>
@@ -286,10 +264,10 @@ export default function MemoList({
               回顧：{memo.review}
             </Typography>
           </Box>
-
           {/* ボタンを横並びに */}
           {showActions && (
             <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+              {/* 削除ボタン */}
               <Button
                 variant="outlined"
                 color="error"
@@ -303,6 +281,8 @@ export default function MemoList({
               >
                 削除
               </Button>
+              {/* 編集ボタン */}
+              {/* 対象の馬のメモの編集画面に遷移 */}
               <Link
                 href={`/mypage/edit/${memo.id}?from=${encodeURIComponent(`/horse/${encodeURIComponent(memo.horseName)}`)}`}
               >
@@ -319,7 +299,6 @@ export default function MemoList({
               </Link>
             </Box>
           )}
-
         </Box>
       ))
     )}

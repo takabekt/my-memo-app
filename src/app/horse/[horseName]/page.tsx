@@ -5,14 +5,18 @@ import { Box, Button, Typography } from "@mui/material";
 import MemoList from "@/app/mypage/MemoList"
 
 export default function HorseMemoPage() {
+  // URLの馬名を取得
   const { horseName } = useParams();
+  // URLエンコードされているので元の文字列に戻す
   const decodedHorseName = decodeURIComponent(horseName as string);
-  const router = useRouter(); 
+
+  const router = useRouter();
+  // 戻るボタンを押下した際に、遷移元に戻るためにクエリパラメータを取得
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
-
   return (
     <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
+      {/*タイトル */}
       <Typography
         variant="h5"
         sx={{
@@ -23,8 +27,6 @@ export default function HorseMemoPage() {
       >
         {decodedHorseName}のメモ一覧
       </Typography>
-
-
       <Box
         sx={{
           display: "flex",
@@ -34,10 +36,12 @@ export default function HorseMemoPage() {
         }}
       >
         {/*戻るボタン */}
+        {/*遷移元に戻る */}
         <Button variant="outlined" onClick={() => router.push(from || "/search")}>
           戻る
         </Button>
         {/*新規登録ボタン */}
+        {/*from(戻る先)とhorseNameを渡す */}
         <Button
           variant="contained"
           onClick={() =>
@@ -49,12 +53,11 @@ export default function HorseMemoPage() {
           新規登録
         </Button>
       </Box>
-
-
+      {/*メモ一覧 */}
       <MemoList 
         filterHorseName={decodedHorseName} 
-        showActions={true}
-        editableNextNote={true}
+        showActions={true} // メモの編集・削除ボタンを表示
+        editableNextNote={true} // 次走メモの編集・削除ボタン表示
       />
     </Box>
   );
