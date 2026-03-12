@@ -1,3 +1,4 @@
+// TypeScript の動作を細かく制御するための設定
 {
   "compilerOptions": {
     "target": "ES2017",
