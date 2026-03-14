@@ -10,7 +10,6 @@ const theme = createTheme();
  * `CssBaseline` でブラウザのデフォルトスタイルをリセット
  * `children` に渡された要素すべてにテーマが反映される
  */
-
 export default function MuiProvider({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
