@@ -1,10 +1,10 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
-import { useState } from "react";
-
+// 認証が必要なページを保護するためのガードコンポーネント
+// 未ログインの場合は自動的に/loginにリダイレクト
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   // ログイン状態を確認中であるかどうか

@@ -3,8 +3,9 @@
 import { SnackbarProvider } from "notistack";
 import MuiProvider from "../components/MuiProvider";
 import ClientAuthProvider from "../components/ClientAuthProvider";
-// 必要なUIテーマ・通知・認証の機能をまとめて提供しているコンポーネント
-// すべてのページで共通のテーマ・通知・認証が使えるようになってる
+/**必要なUIテーマ・通知・認証の機能をまとめて提供しているコンポーネント
+ * すべてのページで共通のテーマ・通知・認証が使えるようになってる
+*/
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     // アプリ全体に一貫したデザインテーマを適用するための土台

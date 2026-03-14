@@ -10,7 +10,18 @@ type Props = {
   horseName: string;
   editable: boolean; // true: 編集可, false: 表示のみ
 };
-// 次走メモコンポーネント
+/**
+ * 次走メモ表示・編集コンポーネント
+ *
+ * Props:
+ * - userId: Firebase Authentication の UID（ユーザーごとのメモを管理）
+ * - horseName: 対象の競走馬の名前（ドキュメントIDとして使用）
+ * - editable: true の場合は編集可能、false の場合は表示のみ
+ *
+ * Firestore の構造:
+ * users/{userId}/nextNotes/{horseName} にメモを保存・取得
+ */
+
 export default function NextNoteBlock({ userId, horseName, editable }: Props) {
   const [note, setNote] = useState('');
   const [editing, setEditing] = useState(false);
@@ -27,7 +38,6 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
     };
     fetchNote();
   }, [userId, horseName]);
-
   const handleSave = async () => {
     const ref = doc(db, 'users', userId, 'nextNotes', horseName);
     await setDoc(
@@ -40,9 +50,7 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
     );
     setEditing(false);
   };
-
   if (loading) return <Typography color="text.secondary">読み込み中...</Typography>;
-
   return (
     <Box
       sx={{

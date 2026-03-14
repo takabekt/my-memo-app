@@ -12,6 +12,16 @@ type Props = {
   loading?: boolean;
 };
 
+/**
+ * 確認ダイアログコンポーネント
+ * 
+ * `open`: ダイアログの表示状態を制御
+ * `onClose`: キャンセル時の処理
+ * `onConfirm`: 確認ボタンが押されたときの処理
+ * `title`, `message`: ダイアログのタイトルと本文
+ * `confirmLabel`, `cancelLabel`: ボタンのラベルをカスタマイズ可能
+ * `loading`: 処理中にボタンを無効化するためのフラグ
+ */
 export default function ConfirmDialog({
   open,
   onClose,
@@ -20,7 +30,7 @@ export default function ConfirmDialog({
   message = "本当に前の画面へ戻りますか？ 保存していない変更は失われます。",
   confirmLabel = "はい",
   cancelLabel = "いいえ",
-  loading = false, // デフォルト値も追加
+  loading = false,
 }: Props) {
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="confirm-back-title">

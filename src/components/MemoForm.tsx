@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ConfirmDialog from "@/components/ConfirmDialog"; 
 import { useSnackbar } from "notistack";
 
-// 新規追加
+// 新規追加メモ項目コンポーネント
 export default function MemoForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -85,15 +85,12 @@ export default function MemoForm() {
       weight: !weight,
       horseWeight: !horseWeight,
     };
-
     setErrors(newErrors);
-
     // 1つでも true があればエラー
     if (Object.values(newErrors).includes(true)) {
       alert("未入力の項目があります");
       return;
     }
-
     // uidを取得
     // uid = Firebase Authentication がユーザーごとに自動で発行する「唯一のID」
     const user = auth.currentUser;
@@ -101,11 +98,9 @@ export default function MemoForm() {
       console.error("ログインしていません");
       return;
     }
-
     // 二重送信防止
     if (isSubmitting) return; 
     setIsSubmitting(true);  // 登録中フラグON
-
     try {
       // ユーザーごとにメモを設定
       // uidと自動IDをもとにメモを保存
@@ -126,7 +121,6 @@ export default function MemoForm() {
         horseWeight,
         createdAt: new Date(),
       });
-
       setTimeout(() => {
         // 保存後にフォームをクリア
         setHorseName("");
@@ -152,7 +146,6 @@ export default function MemoForm() {
         // 登録中フラグOFF
         setIsSubmitting(false);
       }, 3000); // 3秒後に遷移
-
     } catch (error) {
       console.error("登録エラー:", error);
       enqueueSnackbar("登録に失敗しました", { variant: "error" });
@@ -183,6 +176,7 @@ export default function MemoForm() {
     >
       戻る
     </Button>
+      {/* 馬名 */}
       <TextField
         label="馬名"
         fullWidth
@@ -193,6 +187,7 @@ export default function MemoForm() {
         helperText={errors.horseName ? "必須項目です" : ""}
         sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
+      {/* レース名 */}
       <TextField
         label="レース名"
         fullWidth
@@ -203,7 +198,7 @@ export default function MemoForm() {
         helperText={errors.raceName ? "必須項目です" : ""}
         sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
-
+      {/* 日付 */}
       <TextField
         label="日付"
         type="date"
@@ -216,7 +211,7 @@ export default function MemoForm() {
         helperText={errors.date ? "必須項目です" : ""}
         sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
-
+      {/* 順位 */}
       <TextField
         label="順位"
         type="number"
@@ -229,7 +224,6 @@ export default function MemoForm() {
         helperText={errors.rank ? "必須項目です" : ""}
         sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
-
       {/* 競馬場 */}
       <TextField
         select
@@ -318,7 +312,6 @@ export default function MemoForm() {
           </MenuItem>
         ))}
       </TextField>
-
       {/* 馬場状態 */}
       <TextField
         select
@@ -339,7 +332,7 @@ export default function MemoForm() {
         <MenuItem value="重">重</MenuItem>
         <MenuItem value="不良">不良</MenuItem>
       </TextField>
-
+      {/* 馬番 */}
       <TextField
         label="馬番"
         type="number"
@@ -352,7 +345,7 @@ export default function MemoForm() {
         helperText={errors.horseNumber ? "必須項目です" : ""}
         sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
-
+      {/* 騎手 */}
       <TextField
         label="騎手"
         fullWidth
@@ -363,7 +356,7 @@ export default function MemoForm() {
         helperText={errors.jockey ? "必須項目です" : ""}
         sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
-
+      {/* 斤量 */}
       <TextField
         label="斤量（kg）"
         type="number"
@@ -375,7 +368,7 @@ export default function MemoForm() {
         helperText={errors.weight ? "必須項目です" : ""}
         sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
-
+      {/* 場体重 */}
       <TextField
         label="馬体重（kg）"
         type="number"
@@ -387,7 +380,7 @@ export default function MemoForm() {
         helperText={errors.horseWeight ? "必須項目です" : ""}
         sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
-
+      {/* 回顧 */}
       <TextField
         label="回顧"
         fullWidth
@@ -403,7 +396,7 @@ export default function MemoForm() {
           lineHeight: 1.6
         }}
        />
-
+      {/* 登録ボタン */}
       <Button type="submit" variant="contained" sx={{
         mt: 2,
         fontSize: { xs: "0.9rem", sm: "1rem" },
