@@ -1,7 +1,7 @@
 "use client";
 
-import MemoForm from "../../../components/MemoForm";
-import AuthGuard from "../../../components/AuthGuard";
+import MemoForm from "../../../components/form/MemoForm";
+import AuthGuard from "../../../components/auth/AuthGuard";
 import { Typography } from "@mui/material";
 // 新規登録画面
 export default function NewMemoPage() {

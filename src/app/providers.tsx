@@ -1,8 +1,8 @@
 "use client";
 
 import { SnackbarProvider } from "notistack";
-import MuiProvider from "../components/MuiProvider";
-import ClientAuthProvider from "../components/ClientAuthProvider";
+import MuiProvider from "../components/ui/MuiProvider";
+import ClientAuthProvider from "../components/auth/ClientAuthProvider";
 /**必要なUIテーマ・通知・認証の機能をまとめて提供しているコンポーネント
  * すべてのページで共通のテーマ・通知・認証が使えるようになってる
 */

@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { TextField, Button, Box, MenuItem } from "@mui/material";
 import { collection, addDoc } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { db, auth } from "../../firebase";
 import { useRouter, useSearchParams } from "next/navigation";
-import ConfirmDialog from "@/components/ConfirmDialog"; 
+import ConfirmDialog from "@/components/ui/ConfirmDialog"; 
 import { useSnackbar } from "notistack";
 
 // 新規追加メモ項目コンポーネント

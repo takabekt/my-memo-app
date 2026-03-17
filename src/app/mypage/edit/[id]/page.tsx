@@ -6,7 +6,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
-import ConfirmDialog from "@/components/ConfirmDialog";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { useSnackbar } from "notistack";
 
 // 編集画面

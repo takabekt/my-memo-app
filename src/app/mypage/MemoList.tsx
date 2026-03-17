@@ -7,8 +7,8 @@ import Link from "next/link";
 import { Box, Typography, Button } from "@mui/material";
 import { fieldSx, dateFieldSx } from "@/utils/fieldSx"; 
 import { useSnackbar } from "notistack";
-import ConfirmDialog from "@/components/ConfirmDialog";
-import NextNoteBlock from '@/components/NextNote';
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import NextNoteBlock from '@/components/memo/NextNote';
 // 対象の馬のメモ一覧コンポーネント
 // 型定義
 type Memo = {
