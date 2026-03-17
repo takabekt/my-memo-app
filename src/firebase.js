@@ -1,6 +1,6 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 //Firebaseの設定と準備を一か所にまとめたファイル
 // Firebaseの設定（.env.local から読み込む）
@@ -17,12 +17,11 @@ const app = initializeApp(firebaseConfig);
 
 // 認証とFirestoreのインスタンスを作成
 // ログイン・ログアウトなどの認証機能を使うための入り口
-const auth = getAuth(app); 
+const auth = getAuth(app);
 // Googleログインを使うための設定
-const provider = new GoogleAuthProvider(); 
+const provider = new GoogleAuthProvider();
 // Firestore（データベース）を使うための入り口
-const db = getFirestore(app); 
+const db = getFirestore(app);
 
 // 他のファイルで使えるようにエクスポート
 export { auth, provider, db };
-

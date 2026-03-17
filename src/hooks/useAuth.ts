@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "@/firebase";
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/firebase';
 
 // ログインしてるかどうかをリアルタイムで確認
 export function useAuth() {

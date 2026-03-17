@@ -1,5 +1,12 @@
-import React from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from "@mui/material";
+import React from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from '@mui/material';
 
 type Props = {
   open: boolean;
@@ -14,7 +21,7 @@ type Props = {
 
 /**
  * 確認ダイアログコンポーネント
- * 
+ *
  * `open`: ダイアログの表示状態を制御
  * `onClose`: キャンセル時の処理
  * `onConfirm`: 確認ボタンが押されたときの処理
@@ -26,10 +33,10 @@ export default function ConfirmDialog({
   open,
   onClose,
   onConfirm,
-  title = "確認",
-  message = "本当に前の画面へ戻りますか？ 保存していない変更は失われます。",
-  confirmLabel = "はい",
-  cancelLabel = "いいえ",
+  title = '確認',
+  message = '本当に前の画面へ戻りますか？ 保存していない変更は失われます。',
+  confirmLabel = 'はい',
+  cancelLabel = 'いいえ',
   loading = false,
 }: Props) {
   return (
@@ -47,7 +54,7 @@ export default function ConfirmDialog({
           variant="contained"
           color="primary"
           autoFocus
-          disabled={loading} 
+          disabled={loading}
         >
           {confirmLabel}
         </Button>

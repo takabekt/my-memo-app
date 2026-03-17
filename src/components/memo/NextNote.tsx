@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from "@/firebase";
+import { db } from '@/firebase';
 
 type Props = {
   userId: string;
@@ -58,12 +58,14 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
         p: 2,
         bgcolor: '#f9fbe7',
         borderRadius: 1,
-        maxWidth: 600, 
+        maxWidth: 600,
         width: '100%',
         overflow: 'hidden',
       }}
     >
-      <Typography variant="subtitle2" color="text.secondary">次走メモ（総括）</Typography>
+      <Typography variant="subtitle2" color="text.secondary">
+        次走メモ（総括）
+      </Typography>
 
       {editable ? (
         editing ? (
@@ -77,8 +79,12 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
               sx={{ mt: 1 }}
             />
             <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-              <Button onClick={handleSave} variant="contained" size="small">保存</Button>
-              <Button onClick={() => setEditing(false)} size="small">キャンセル</Button>
+              <Button onClick={handleSave} variant="contained" size="small">
+                保存
+              </Button>
+              <Button onClick={() => setEditing(false)} size="small">
+                キャンセル
+              </Button>
             </Box>
           </>
         ) : (
@@ -94,7 +100,9 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
               {note || 'まだ次走メモはありません。'}
             </Typography>
 
-            <Button onClick={() => setEditing(true)} sx={{ mt: 1 }} size="small">編集</Button>
+            <Button onClick={() => setEditing(true)} sx={{ mt: 1 }} size="small">
+              編集
+            </Button>
           </>
         )
       ) : (

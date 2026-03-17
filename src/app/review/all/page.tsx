@@ -21,7 +21,11 @@ export default function ReviewAllPage() {
         全頭回顧ビュー
       </Typography>
       {/* 説明文 */}
-      <Typography variant="caption" color="text.secondary" sx={{ mb: 2, textAlign: 'center', display: 'block' }}>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{ mb: 2, textAlign: 'center', display: 'block' }}
+      >
         👉 横にスワイプして他の馬を見られます
       </Typography>
       {/* 🔄 Suspense(読み込み中の状態を表示)でラップ */}

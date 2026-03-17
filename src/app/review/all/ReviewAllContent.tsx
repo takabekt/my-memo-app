@@ -40,30 +40,30 @@ export default function ReviewAllContent() {
             flex: '0 0 auto',
             p: 2,
             borderTop: '4px solid #4caf50',
-            wordBreak: 'break-word', 
+            wordBreak: 'break-word',
           }}
         >
-            <Typography
-                variant="h6"
-                component={Link}
-                // 馬名をクリックすると、その馬のメモ一覧画面に遷移
-                href={`/horse/${encodeURIComponent(name)}?from=${encodeURIComponent(`/review/all?${queryString}`)}`}
-                sx={{
-                    fontWeight: 'bold',
-                    mb: 2,
-                    color: '#1976d2',
-                    textDecoration: 'none',
-                    '&:hover': {
-                    textDecoration: 'underline',
-                    },
-                    cursor: 'pointer',
-                }}
-                >
-                {name}
-            </Typography>
+          <Typography
+            variant="h6"
+            component={Link}
+            // 馬名をクリックすると、その馬のメモ一覧画面に遷移
+            href={`/horse/${encodeURIComponent(name)}?from=${encodeURIComponent(`/review/all?${queryString}`)}`}
+            sx={{
+              fontWeight: 'bold',
+              mb: 2,
+              color: '#1976d2',
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
+              cursor: 'pointer',
+            }}
+          >
+            {name}
+          </Typography>
           {/*メモ一覧 */}
-          <MemoList 
-            filterHorseName={name} 
+          <MemoList
+            filterHorseName={name}
             showActions={false} // メモの編集・削除ボタンを非表示
             editableNextNote={false} // 次走メモの編集・削除ボタンを非表示
           />

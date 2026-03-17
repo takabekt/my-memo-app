@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
-import { Button, Typography, Box, Container } from "@mui/material";
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../firebase";  
-import { FcGoogle } from "react-icons/fc";
-import { useRouter } from "next/navigation";       
-
+import { Button, Typography, Box, Container } from '@mui/material';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '../../firebase';
+import { FcGoogle } from 'react-icons/fc';
+import { useRouter } from 'next/navigation';
 
 // Googleログイン画面
 // 「/login」 にアクセスしたときに表示される画面
@@ -16,9 +15,9 @@ export default function LoginPage() {
       // Googleのログイン画面をポップアップで開いて、ログイン
       await signInWithPopup(auth, provider);
       // ✅ ログイン成功後に /search に移動！
-      router.push("/search");
+      router.push('/search');
     } catch (error) {
-      console.error("ログイン失敗:", error);
+      console.error('ログイン失敗:', error);
     }
   };
 
@@ -27,11 +26,11 @@ export default function LoginPage() {
     <Container maxWidth="sm">
       <Box
         display="flex"
-        flexDirection="column"  // 子要素を縦に並べる
-        alignItems="center"     // 横方向に中央寄せ
+        flexDirection="column" // 子要素を縦に並べる
+        alignItems="center" // 横方向に中央寄せ
         justifyContent="center" // 縦方向に中央寄せ
-        minHeight="100vh"       // 画面の高さ
-        textAlign="center"      // テキストを中央揃え
+        minHeight="100vh" // 画面の高さ
+        textAlign="center" // テキストを中央揃え
       >
         <Typography variant="h4" gutterBottom>
           📝🏇 競馬メモ

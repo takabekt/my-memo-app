@@ -1,8 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../firebase";
+'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../firebase';
 // 認証が必要なページを保護するためのガードコンポーネント
 // 未ログインの場合は自動的に/loginにリダイレクト
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -19,7 +19,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         setIsAuthenticated(true);
       } else {
         // 未ログインなら、login画面に遷移
-        router.push("/login");
+        router.push('/login');
       }
       // ログイン状態確認中フラグをfalseに更新
       setChecking(false);
