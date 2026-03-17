@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Button, Typography, Box, Container } from '@mui/material';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../../firebase';
-import { FcGoogle } from 'react-icons/fc';
-import { useRouter } from 'next/navigation';
+import { Button, Typography, Box, Container } from "@mui/material";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../../firebase";
+import { FcGoogle } from "react-icons/fc";
+import { useRouter } from "next/navigation";
 
 // Googleログイン画面
 // 「/login」 にアクセスしたときに表示される画面
@@ -15,9 +15,9 @@ export default function LoginPage() {
       // Googleのログイン画面をポップアップで開いて、ログイン
       await signInWithPopup(auth, provider);
       // ✅ ログイン成功後に /search に移動！
-      router.push('/search');
+      router.push("/search");
     } catch (error) {
-      console.error('ログイン失敗:', error);
+      console.error("ログイン失敗:", error);
     }
   };
 

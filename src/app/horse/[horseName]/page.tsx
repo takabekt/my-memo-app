@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import { Box, Button, Typography } from '@mui/material';
-import MemoList from '@/app/mypage/MemoList';
+import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { Box, Button, Typography } from "@mui/material";
+import MemoList from "@/app/mypage/MemoList";
 
 export default function HorseMemoPage() {
   // URLの馬名を取得
@@ -13,31 +13,31 @@ export default function HorseMemoPage() {
   const router = useRouter();
   // 戻るボタンを押下した際に、遷移元に戻るためにクエリパラメータを取得
   const searchParams = useSearchParams();
-  const from = searchParams.get('from');
+  const from = searchParams.get("from");
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, px: 2 }}>
+    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
       {/*タイトル */}
       <Typography
         variant="h5"
         sx={{
-          fontWeight: 'bold',
+          fontWeight: "bold",
           mb: 2,
-          textAlign: 'center',
+          textAlign: "center",
         }}
       >
         {decodedHorseName}のメモ一覧
       </Typography>
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           mb: 2,
         }}
       >
         {/*戻るボタン */}
         {/*遷移元に戻る */}
-        <Button variant="outlined" onClick={() => router.push(from || '/search')}>
+        <Button variant="outlined" onClick={() => router.push(from || "/search")}>
           戻る
         </Button>
         {/*新規登録ボタン */}

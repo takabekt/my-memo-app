@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
+import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 
 const theme = createTheme();
 /**

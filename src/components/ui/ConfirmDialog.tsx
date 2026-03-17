@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -6,7 +6,7 @@ import {
   DialogActions,
   Button,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 
 type Props = {
   open: boolean;
@@ -33,10 +33,10 @@ export default function ConfirmDialog({
   open,
   onClose,
   onConfirm,
-  title = '確認',
-  message = '本当に前の画面へ戻りますか？ 保存していない変更は失われます。',
-  confirmLabel = 'はい',
-  cancelLabel = 'いいえ',
+  title = "確認",
+  message = "本当に前の画面へ戻りますか？ 保存していない変更は失われます。",
+  confirmLabel = "はい",
+  cancelLabel = "いいえ",
   loading = false,
 }: Props) {
   return (

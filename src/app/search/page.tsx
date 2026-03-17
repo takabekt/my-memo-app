@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db, auth } from '@/firebase';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db, auth } from "@/firebase";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Typography,
@@ -14,10 +14,10 @@ import {
   ListItemText,
   IconButton,
   Button,
-} from '@mui/material';
-import Link from 'next/link';
-import ClearIcon from '@mui/icons-material/Clear';
-import { Checkbox } from '@mui/material';
+} from "@mui/material";
+import Link from "next/link";
+import ClearIcon from "@mui/icons-material/Clear";
+import { Checkbox } from "@mui/material";
 
 type Memo = {
   id: string;
@@ -26,7 +26,7 @@ type Memo = {
 // 検索画面
 export default function SearchPage() {
   // 検索ボックスに入力された文字列を管理
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   //  Firebaseから取得した馬名の一覧を管理
   const [horseNames, setHorseNames] = useState<string[]>([]);
   const router = useRouter();
@@ -53,11 +53,11 @@ export default function SearchPage() {
       const user = auth.currentUser;
       if (!user) return;
       // ログイン中ユーザーの「raceReviews」コレクションからメモを取得
-      const ref = collection(db, 'users', user.uid, 'raceReviews');
+      const ref = collection(db, "users", user.uid, "raceReviews");
       const snapshot = await getDocs(ref);
       const memos: Memo[] = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...(doc.data() as Omit<Memo, 'id'>),
+        ...(doc.data() as Omit<Memo, "id">),
       }));
       // 馬名だけを抽出して重複を除外
       const names = Array.from(new Set(memos.map((memo) => memo.horseName)));
@@ -68,15 +68,15 @@ export default function SearchPage() {
   // 検索フィルター処理
   // 馬名順で取得
   const filteredNames = horseNames
-    .filter((name): name is string => typeof name === 'string')
+    .filter((name): name is string => typeof name === "string")
     .filter((name) => name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => a.localeCompare(b));
 
   return (
     // 画面全体のコンテナ　中央寄せで、幅を600pxに設定
-    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, px: 2 }}>
+    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
       {/* 検索ボックス */}
-      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
         馬名で検索
       </Typography>
       <TextField
@@ -89,7 +89,7 @@ export default function SearchPage() {
         InputProps={{
           endAdornment: searchQuery && (
             <IconButton
-              onClick={() => setSearchQuery('')}
+              onClick={() => setSearchQuery("")}
               edge="end"
               size="small"
               aria-label="クリア"
@@ -105,10 +105,10 @@ export default function SearchPage() {
       </Typography>
       <Box
         sx={{
-          display: 'flex', // ボタンを横並び
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
+          display: "flex", // ボタンを横並び
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
           gap: 1,
           mb: 2,
         }}
@@ -122,11 +122,11 @@ export default function SearchPage() {
         >
           選択クリア
         </Button>
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1 }}>
           {/* 全頭回顧ビューへボタン */}
           <Link
             // 選択した馬名をクエリに設定
-            href={`/review/all?horses=${selectedNames.map(encodeURIComponent).join(',')}`}
+            href={`/review/all?horses=${selectedNames.map(encodeURIComponent).join(",")}`}
             passHref
           >
             <Button
@@ -148,10 +148,10 @@ export default function SearchPage() {
       {/* スクロールで全件確認可能 */}
       <Box
         sx={{
-          maxHeight: '40vh',
-          overflowY: 'auto',
+          maxHeight: "40vh",
+          overflowY: "auto",
           mb: 2,
-          border: '1px solid #ccc',
+          border: "1px solid #ccc",
         }}
       >
         {/* 馬名リスト */}
@@ -171,7 +171,7 @@ export default function SearchPage() {
                     selectedNames.length >= 18 && !selectedNames.includes(name)
                   }
                   sx={{
-                    '& svg': {
+                    "& svg": {
                       fontSize: 40,
                     },
                   }}
@@ -183,11 +183,11 @@ export default function SearchPage() {
                         onClick={() =>
                           router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
                         }
-                        style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                        style={{ cursor: "pointer", fontSize: "1.2rem" }}
                       >
-                        {name.split(new RegExp(`(${searchQuery})`, 'gi')).map((part, i) =>
+                        {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
                           part.toLowerCase() === searchQuery.toLowerCase() ? (
-                            <span key={i} style={{ color: '#1976d2', fontWeight: 'bold' }}>
+                            <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
                               {part}
                             </span>
                           ) : (
@@ -207,16 +207,16 @@ export default function SearchPage() {
       {selectedNames.length > 0 && (
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" color="text.secondary">
-            選択中の馬（{selectedNames.length}頭）:{' '}
+            選択中の馬（{selectedNames.length}頭）:{" "}
             {selectedNames
               .slice()
               .sort((a, b) => a.localeCompare(b)) // 名前順にソート
-              .join(', ')}
+              .join(", ")}
           </Typography>
         </Box>
       )}
       {filteredNames.length === 0 && (
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Box sx={{ textAlign: "center", mt: 4 }}>
           <Typography variant="body1" color="text.secondary">
             該当する馬が見つかりません。
           </Typography>

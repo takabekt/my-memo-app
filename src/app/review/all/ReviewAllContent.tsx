@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { Box, Typography, Paper } from '@mui/material';
-import MemoList from '@/app/mypage/MemoList';
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Box, Typography, Paper } from "@mui/material";
+import MemoList from "@/app/mypage/MemoList";
 // 選択した馬のメモコンポーネント
 export default function ReviewAllContent() {
   // クエリパラメータから馬名を取得
   const searchParams = useSearchParams();
-  const horseQuery = searchParams.get('horses');
-  const horseNames = horseQuery ? horseQuery.split(',').map(decodeURIComponent) : [];
+  const horseQuery = searchParams.get("horses");
+  const horseNames = horseQuery ? horseQuery.split(",").map(decodeURIComponent) : [];
   const queryString = searchParams.toString();
   // 馬が選ばれていない時の表示
   if (horseNames.length === 0) {
@@ -23,8 +23,8 @@ export default function ReviewAllContent() {
   return (
     <Box
       sx={{
-        display: 'flex',
-        overflowX: 'auto',
+        display: "flex",
+        overflowX: "auto",
         gap: 2,
         pb: 2,
       }}
@@ -36,11 +36,11 @@ export default function ReviewAllContent() {
           sx={{
             minWidth: 300,
             maxWidth: 400,
-            width: '100%',
-            flex: '0 0 auto',
+            width: "100%",
+            flex: "0 0 auto",
             p: 2,
-            borderTop: '4px solid #4caf50',
-            wordBreak: 'break-word',
+            borderTop: "4px solid #4caf50",
+            wordBreak: "break-word",
           }}
         >
           <Typography
@@ -49,14 +49,14 @@ export default function ReviewAllContent() {
             // 馬名をクリックすると、その馬のメモ一覧画面に遷移
             href={`/horse/${encodeURIComponent(name)}?from=${encodeURIComponent(`/review/all?${queryString}`)}`}
             sx={{
-              fontWeight: 'bold',
+              fontWeight: "bold",
               mb: 2,
-              color: '#1976d2',
-              textDecoration: 'none',
-              '&:hover': {
-                textDecoration: 'underline',
+              color: "#1976d2",
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
               },
-              cursor: 'pointer',
+              cursor: "pointer",
             }}
           >
             {name}

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { TextField, Button, Box, MenuItem } from '@mui/material';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db, auth } from '@/firebase';
-import { fieldSx, dateFieldSx } from '@/utils/fieldSx';
-import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import { useSnackbar } from 'notistack';
+import { useEffect, useState } from "react";
+import { TextField, Button, Box, MenuItem } from "@mui/material";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db, auth } from "@/firebase";
+import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { useSnackbar } from "notistack";
 
 // 編集画面
 export default function EditPage() {
@@ -17,23 +17,23 @@ export default function EditPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   // URLから遷移元のfromを取得
-  const from = searchParams.get('from');
+  const from = searchParams.get("from");
 
   // 入力値
-  const [horseName, setHorseName] = useState('');
-  const [raceName, setRaceName] = useState('');
-  const [date, setDate] = useState('');
-  const [rank, setRank] = useState('');
-  const [review, setReview] = useState('');
-  const [raceCourse, setRaceCourse] = useState('');
-  const [courseDirection, setCourseDirection] = useState('');
-  const [surface, setSurface] = useState('');
-  const [distance, setDistance] = useState('');
-  const [trackCondition, setTrackCondition] = useState('');
-  const [horseNumber, setHorseNumber] = useState('');
-  const [jockey, setJockey] = useState('');
-  const [weight, setWeight] = useState('');
-  const [horseWeight, setHorseWeight] = useState('');
+  const [horseName, setHorseName] = useState("");
+  const [raceName, setRaceName] = useState("");
+  const [date, setDate] = useState("");
+  const [rank, setRank] = useState("");
+  const [review, setReview] = useState("");
+  const [raceCourse, setRaceCourse] = useState("");
+  const [courseDirection, setCourseDirection] = useState("");
+  const [surface, setSurface] = useState("");
+  const [distance, setDistance] = useState("");
+  const [trackCondition, setTrackCondition] = useState("");
+  const [horseNumber, setHorseNumber] = useState("");
+  const [jockey, setJockey] = useState("");
+  const [weight, setWeight] = useState("");
+  const [horseWeight, setHorseWeight] = useState("");
 
   // エラー管理
   const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -45,7 +45,7 @@ export default function EditPage() {
     // 確認ダイアログを閉じる
     setOpenConfirm(false);
     // 遷移もとに戻る or 遷移元の指定がなければ検索画面に遷移
-    router.push(from || '/search');
+    router.push(from || "/search");
   };
 
   // 距離データ（MemoForm と同じ）
@@ -72,7 +72,7 @@ export default function EditPage() {
     const fetchData = async () => {
       const user = auth.currentUser;
       if (!user) return;
-      const ref = doc(db, 'users', user.uid, 'raceReviews', docId);
+      const ref = doc(db, "users", user.uid, "raceReviews", docId);
       const snapshot = await getDoc(ref);
       if (snapshot.exists()) {
         const data = snapshot.data();
@@ -118,7 +118,7 @@ export default function EditPage() {
     };
     setErrors(newErrors);
     if (Object.values(newErrors).includes(true)) {
-      alert('未入力の項目があります');
+      alert("未入力の項目があります");
       return;
     }
     const user = auth.currentUser;
@@ -126,7 +126,7 @@ export default function EditPage() {
     // 二重送信防止
     if (isSubmitting) return;
     setIsSubmitting(true); // 更新中フラグON
-    const ref = doc(db, 'users', user.uid, 'raceReviews', docId);
+    const ref = doc(db, "users", user.uid, "raceReviews", docId);
     // Firestore のデータを更新
     await updateDoc(ref, {
       horseName,
@@ -146,10 +146,10 @@ export default function EditPage() {
     });
     setTimeout(() => {
       // ✅ トースト通知を表示
-      enqueueSnackbar('メモを更新しました', { variant: 'success' });
+      enqueueSnackbar("メモを更新しました", { variant: "success" });
 
       // 更新後は一覧ページへ戻る
-      router.push('/search');
+      router.push("/search");
       // 更新中フラグOFF
       setIsSubmitting(false);
     }, 3000); // 3秒後に遷移
@@ -161,8 +161,8 @@ export default function EditPage() {
       noValidate
       sx={{
         mt: 4,
-        maxWidth: { xs: '100%', sm: 600 },
-        mx: 'auto',
+        maxWidth: { xs: "100%", sm: 600 },
+        mx: "auto",
         px: { xs: 2, sm: 0 },
         pb: 6,
       }}
@@ -176,7 +176,7 @@ export default function EditPage() {
         }}
         sx={{
           mb: 2,
-          fontSize: { xs: '0.85rem', sm: '1rem' },
+          fontSize: { xs: "0.85rem", sm: "1rem" },
           py: { xs: 0.8, sm: 1 },
           px: { xs: 2, sm: 3 },
         }}
@@ -191,7 +191,7 @@ export default function EditPage() {
         value={horseName}
         onChange={(e) => setHorseName(e.target.value)}
         error={errors.horseName}
-        helperText={errors.horseName ? '必須項目です' : ''}
+        helperText={errors.horseName ? "必須項目です" : ""}
         sx={fieldSx}
       />
       <TextField
@@ -201,7 +201,7 @@ export default function EditPage() {
         value={raceName}
         onChange={(e) => setRaceName(e.target.value)}
         error={errors.raceName}
-        helperText={errors.raceName ? '必須項目です' : ''}
+        helperText={errors.raceName ? "必須項目です" : ""}
         sx={fieldSx}
       />
 
@@ -214,7 +214,7 @@ export default function EditPage() {
         value={date}
         onChange={(e) => setDate(e.target.value)}
         error={errors.date}
-        helperText={errors.date ? '必須項目です' : ''}
+        helperText={errors.date ? "必須項目です" : ""}
         sx={dateFieldSx}
       />
 
@@ -226,7 +226,7 @@ export default function EditPage() {
         value={rank}
         onChange={(e) => setRank(e.target.value)}
         error={errors.rank}
-        helperText={errors.rank ? '必須項目です' : ''}
+        helperText={errors.rank ? "必須項目です" : ""}
         sx={fieldSx}
       />
 
@@ -238,10 +238,10 @@ export default function EditPage() {
         value={raceCourse}
         onChange={(e) => {
           setRaceCourse(e.target.value);
-          setDistance('');
+          setDistance("");
         }}
         error={errors.raceCourse}
-        helperText={errors.raceCourse ? '必須項目です' : ''}
+        helperText={errors.raceCourse ? "必須項目です" : ""}
         sx={fieldSx}
       >
         <MenuItem value="">
@@ -261,10 +261,10 @@ export default function EditPage() {
         value={surface}
         onChange={(e) => {
           setSurface(e.target.value);
-          setDistance('');
+          setDistance("");
         }}
         error={errors.surface}
-        helperText={errors.surface ? '必須項目です' : ''}
+        helperText={errors.surface ? "必須項目です" : ""}
         sx={fieldSx}
       >
         <MenuItem value="">
@@ -281,7 +281,7 @@ export default function EditPage() {
         value={courseDirection}
         onChange={(e) => setCourseDirection(e.target.value)}
         error={errors.courseDirection}
-        helperText={errors.courseDirection ? '必須項目です' : ''}
+        helperText={errors.courseDirection ? "必須項目です" : ""}
         sx={fieldSx}
       >
         <MenuItem value="">
@@ -299,7 +299,7 @@ export default function EditPage() {
         onChange={(e) => setDistance(e.target.value)}
         disabled={!raceCourse || !surface}
         error={errors.distance}
-        helperText={errors.distance ? '必須項目です' : ''}
+        helperText={errors.distance ? "必須項目です" : ""}
         sx={fieldSx}
       >
         <MenuItem value="">
@@ -319,7 +319,7 @@ export default function EditPage() {
         value={trackCondition}
         onChange={(e) => setTrackCondition(e.target.value)}
         error={errors.trackCondition}
-        helperText={errors.trackCondition ? '必須項目です' : ''}
+        helperText={errors.trackCondition ? "必須項目です" : ""}
         sx={fieldSx}
       >
         <MenuItem value="">
@@ -338,7 +338,7 @@ export default function EditPage() {
         value={horseNumber}
         onChange={(e) => setHorseNumber(e.target.value)}
         error={errors.horseNumber}
-        helperText={errors.horseNumber ? '必須項目です' : ''}
+        helperText={errors.horseNumber ? "必須項目です" : ""}
         sx={fieldSx}
       />
       <TextField
@@ -348,7 +348,7 @@ export default function EditPage() {
         value={jockey}
         onChange={(e) => setJockey(e.target.value)}
         error={errors.jockey}
-        helperText={errors.jockey ? '必須項目です' : ''}
+        helperText={errors.jockey ? "必須項目です" : ""}
         sx={fieldSx}
       />
       <TextField
@@ -359,7 +359,7 @@ export default function EditPage() {
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
         error={errors.weight}
-        helperText={errors.weight ? '必須項目です' : ''}
+        helperText={errors.weight ? "必須項目です" : ""}
         sx={fieldSx}
       />
       <TextField
@@ -370,7 +370,7 @@ export default function EditPage() {
         value={horseWeight}
         onChange={(e) => setHorseWeight(e.target.value)}
         error={errors.horseWeight}
-        helperText={errors.horseWeight ? '必須項目です' : ''}
+        helperText={errors.horseWeight ? "必須項目です" : ""}
         sx={fieldSx}
       />
       <TextField
@@ -382,9 +382,9 @@ export default function EditPage() {
         value={review}
         onChange={(e) => setReview(e.target.value)}
         error={errors.review}
-        helperText={errors.review ? '必須項目です' : ''}
+        helperText={errors.review ? "必須項目です" : ""}
         sx={{
-          fontSize: { xs: '0.9rem', sm: '1rem' },
+          fontSize: { xs: "0.9rem", sm: "1rem" },
           lineHeight: 1.6,
         }}
       />
@@ -394,12 +394,12 @@ export default function EditPage() {
         variant="contained"
         sx={{
           mt: 2,
-          fontSize: { xs: '0.9rem', sm: '1rem' },
+          fontSize: { xs: "0.9rem", sm: "1rem" },
           py: { xs: 1, sm: 1.2 },
           px: { xs: 3, sm: 4 },
         }}
       >
-        {isSubmitting ? '更新中...' : '更新'}
+        {isSubmitting ? "更新中..." : "更新"}
       </Button>
       {/* 確認ダイアログの表示 */}
       <ConfirmDialog

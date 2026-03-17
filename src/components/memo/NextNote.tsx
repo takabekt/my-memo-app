@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/firebase';
+import { useEffect, useState } from "react";
+import { Box, Typography, TextField, Button } from "@mui/material";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/firebase";
 
 type Props = {
   userId: string;
@@ -23,23 +23,23 @@ type Props = {
  */
 
 export default function NextNoteBlock({ userId, horseName, editable }: Props) {
-  const [note, setNote] = useState('');
+  const [note, setNote] = useState("");
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNote = async () => {
-      const ref = doc(db, 'users', userId, 'nextNotes', horseName);
+      const ref = doc(db, "users", userId, "nextNotes", horseName);
       const snap = await getDoc(ref);
       if (snap.exists()) {
-        setNote(snap.data().note || '');
+        setNote(snap.data().note || "");
       }
       setLoading(false);
     };
     fetchNote();
   }, [userId, horseName]);
   const handleSave = async () => {
-    const ref = doc(db, 'users', userId, 'nextNotes', horseName);
+    const ref = doc(db, "users", userId, "nextNotes", horseName);
     await setDoc(
       ref,
       {
@@ -56,11 +56,11 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
       sx={{
         mb: 2,
         p: 2,
-        bgcolor: '#f9fbe7',
+        bgcolor: "#f9fbe7",
         borderRadius: 1,
         maxWidth: 600,
-        width: '100%',
-        overflow: 'hidden',
+        width: "100%",
+        overflow: "hidden",
       }}
     >
       <Typography variant="subtitle2" color="text.secondary">
@@ -78,7 +78,7 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
               onChange={(e) => setNote(e.target.value)}
               sx={{ mt: 1 }}
             />
-            <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
+            <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
               <Button onClick={handleSave} variant="contained" size="small">
                 保存
               </Button>
@@ -91,13 +91,13 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
           <>
             <Typography
               sx={{
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-                overflowWrap: 'break-word',
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
                 mt: 1,
               }}
             >
-              {note || 'まだ次走メモはありません。'}
+              {note || "まだ次走メモはありません。"}
             </Typography>
 
             <Button onClick={() => setEditing(true)} sx={{ mt: 1 }} size="small">
@@ -109,21 +109,21 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
         <Box
           sx={{
             maxWidth: 600,
-            width: '100%',
-            overflow: 'hidden',
+            width: "100%",
+            overflow: "hidden",
           }}
         >
           <Typography
             sx={{
-              display: 'block',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word',
-              fontSize: '0.95rem',
+              display: "block",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+              fontSize: "0.95rem",
               lineHeight: 1.6,
             }}
           >
-            {note || 'まだ次走メモはありません。'}
+            {note || "まだ次走メモはありません。"}
           </Typography>
         </Box>
       )}

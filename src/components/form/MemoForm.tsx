@@ -1,38 +1,38 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { TextField, Button, Box, MenuItem } from '@mui/material';
-import { collection, addDoc } from 'firebase/firestore';
-import { db, auth } from '../../firebase';
-import { useRouter, useSearchParams } from 'next/navigation';
-import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import { useSnackbar } from 'notistack';
+import { useState } from "react";
+import { TextField, Button, Box, MenuItem } from "@mui/material";
+import { collection, addDoc } from "firebase/firestore";
+import { db, auth } from "../../firebase";
+import { useRouter, useSearchParams } from "next/navigation";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { useSnackbar } from "notistack";
 
 // 新規追加メモ項目コンポーネント
 export default function MemoForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const from = searchParams.get('from');
+  const from = searchParams.get("from");
   // クエリから horseName を取得
-  const initialHorseName = searchParams.get('horseName') || '';
+  const initialHorseName = searchParams.get("horseName") || "";
   // 初期値は今日の日付
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
 
   // 各formの入力値を管理
   const [horseName, setHorseName] = useState(initialHorseName);
-  const [raceName, setRaceName] = useState('');
+  const [raceName, setRaceName] = useState("");
   const [date, setDate] = useState(today);
-  const [rank, setRank] = useState('');
-  const [review, setReview] = useState('');
-  const [raceCourse, setRaceCourse] = useState('');
-  const [courseDirection, setCourseDirection] = useState('');
-  const [surface, setSurface] = useState('');
-  const [distance, setDistance] = useState('');
-  const [trackCondition, setTrackCondition] = useState('');
-  const [horseNumber, setHorseNumber] = useState('');
-  const [jockey, setJockey] = useState('');
-  const [weight, setWeight] = useState('');
-  const [horseWeight, setHorseWeight] = useState('');
+  const [rank, setRank] = useState("");
+  const [review, setReview] = useState("");
+  const [raceCourse, setRaceCourse] = useState("");
+  const [courseDirection, setCourseDirection] = useState("");
+  const [surface, setSurface] = useState("");
+  const [distance, setDistance] = useState("");
+  const [trackCondition, setTrackCondition] = useState("");
+  const [horseNumber, setHorseNumber] = useState("");
+  const [jockey, setJockey] = useState("");
+  const [weight, setWeight] = useState("");
+  const [horseWeight, setHorseWeight] = useState("");
 
   // 項目の入力状態を管理
   const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -63,7 +63,7 @@ export default function MemoForm() {
   // 戻るボタン押下時の処理
   const handleConfirmBack = () => {
     setOpenConfirm(false);
-    router.push(from || '/search');
+    router.push(from || "/search");
   };
   // 登録ボタン押下時の処理
   const { enqueueSnackbar } = useSnackbar();
@@ -91,14 +91,14 @@ export default function MemoForm() {
     setErrors(newErrors);
     // 1つでも true があればエラー
     if (Object.values(newErrors).includes(true)) {
-      alert('未入力の項目があります');
+      alert("未入力の項目があります");
       return;
     }
     // uidを取得
     // uid = Firebase Authentication がユーザーごとに自動で発行する「唯一のID」
     const user = auth.currentUser;
     if (!user) {
-      console.error('ログインしていません');
+      console.error("ログインしていません");
       return;
     }
     // 二重送信防止
@@ -107,7 +107,7 @@ export default function MemoForm() {
     try {
       // ユーザーごとにメモを設定
       // uidと自動IDをもとにメモを保存
-      await addDoc(collection(db, 'users', user.uid, 'raceReviews'), {
+      await addDoc(collection(db, "users", user.uid, "raceReviews"), {
         horseName,
         raceName,
         date,
@@ -126,32 +126,32 @@ export default function MemoForm() {
       });
       setTimeout(() => {
         // 保存後にフォームをクリア
-        setHorseName('');
-        setRaceName('');
-        setDate('');
-        setRank('');
-        setReview('');
-        setRaceCourse('');
-        setCourseDirection('');
-        setSurface('');
-        setDistance('');
-        setTrackCondition('');
-        setHorseNumber('');
-        setJockey('');
-        setWeight('');
-        setHorseWeight('');
-        console.log('保存完了');
+        setHorseName("");
+        setRaceName("");
+        setDate("");
+        setRank("");
+        setReview("");
+        setRaceCourse("");
+        setCourseDirection("");
+        setSurface("");
+        setDistance("");
+        setTrackCondition("");
+        setHorseNumber("");
+        setJockey("");
+        setWeight("");
+        setHorseWeight("");
+        console.log("保存完了");
         // ✅ トースト通知を表示
-        enqueueSnackbar('メモを登録しました', { variant: 'success' });
+        enqueueSnackbar("メモを登録しました", { variant: "success" });
         // 一覧画面へ遷移
-        router.push('/search');
+        router.push("/search");
 
         // 登録中フラグOFF
         setIsSubmitting(false);
       }, 3000); // 3秒後に遷移
     } catch (error) {
-      console.error('登録エラー:', error);
-      enqueueSnackbar('登録に失敗しました', { variant: 'error' });
+      console.error("登録エラー:", error);
+      enqueueSnackbar("登録に失敗しました", { variant: "error" });
       // 登録中フラグOFF
       setIsSubmitting(false);
     }
@@ -161,7 +161,7 @@ export default function MemoForm() {
       component="form"
       onSubmit={handleSubmit}
       noValidate
-      sx={{ mt: 4, maxWidth: { xs: '100%', sm: 600 }, mx: 'auto', px: { xs: 2, sm: 0 }, pb: 6 }}
+      sx={{ mt: 4, maxWidth: { xs: "100%", sm: 600 }, mx: "auto", px: { xs: 2, sm: 0 }, pb: 6 }}
     >
       {/* 戻るボタン */}
       <Button
@@ -172,7 +172,7 @@ export default function MemoForm() {
         }}
         sx={{
           mb: 2,
-          fontSize: { xs: '0.85rem', sm: '1rem' },
+          fontSize: { xs: "0.85rem", sm: "1rem" },
           py: { xs: 0.8, sm: 1 },
           px: { xs: 2, sm: 3 },
         }}
@@ -187,8 +187,8 @@ export default function MemoForm() {
         value={horseName}
         onChange={(e) => setHorseName(e.target.value)}
         error={errors.horseName}
-        helperText={errors.horseName ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.horseName ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
       {/* レース名 */}
       <TextField
@@ -198,8 +198,8 @@ export default function MemoForm() {
         value={raceName}
         onChange={(e) => setRaceName(e.target.value)}
         error={errors.raceName}
-        helperText={errors.raceName ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.raceName ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
       {/* 日付 */}
       <TextField
@@ -211,8 +211,8 @@ export default function MemoForm() {
         value={date}
         onChange={(e) => setDate(e.target.value)}
         error={errors.date}
-        helperText={errors.date ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.date ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
       {/* 順位 */}
       <TextField
@@ -224,8 +224,8 @@ export default function MemoForm() {
         value={rank}
         onChange={(e) => setRank(e.target.value)}
         error={errors.rank}
-        helperText={errors.rank ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.rank ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
       {/* 競馬場 */}
       <TextField
@@ -236,11 +236,11 @@ export default function MemoForm() {
         value={raceCourse}
         onChange={(e) => {
           setRaceCourse(e.target.value);
-          setDistance('');
+          setDistance("");
         }}
         error={errors.raceCourse}
-        helperText={errors.raceCourse ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.raceCourse ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -261,11 +261,11 @@ export default function MemoForm() {
         value={surface}
         onChange={(e) => {
           setSurface(e.target.value);
-          setDistance('');
+          setDistance("");
         }}
         error={errors.surface}
-        helperText={errors.surface ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.surface ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -283,8 +283,8 @@ export default function MemoForm() {
         value={courseDirection}
         onChange={(e) => setCourseDirection(e.target.value)}
         error={errors.courseDirection}
-        helperText={errors.courseDirection ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.courseDirection ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -303,8 +303,8 @@ export default function MemoForm() {
         onChange={(e) => setDistance(e.target.value)}
         disabled={!raceCourse || !surface}
         error={errors.distance}
-        helperText={errors.distance ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.distance ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -324,8 +324,8 @@ export default function MemoForm() {
         value={trackCondition}
         onChange={(e) => setTrackCondition(e.target.value)}
         error={errors.trackCondition}
-        helperText={errors.trackCondition ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.trackCondition ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       >
         <MenuItem value="">
           <em>選択してください</em>
@@ -345,8 +345,8 @@ export default function MemoForm() {
         value={horseNumber}
         onChange={(e) => setHorseNumber(e.target.value)}
         error={errors.horseNumber}
-        helperText={errors.horseNumber ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.horseNumber ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
       {/* 騎手 */}
       <TextField
@@ -356,8 +356,8 @@ export default function MemoForm() {
         value={jockey}
         onChange={(e) => setJockey(e.target.value)}
         error={errors.jockey}
-        helperText={errors.jockey ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.jockey ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
       {/* 斤量 */}
       <TextField
@@ -368,8 +368,8 @@ export default function MemoForm() {
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
         error={errors.weight}
-        helperText={errors.weight ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.weight ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
       {/* 場体重 */}
       <TextField
@@ -380,8 +380,8 @@ export default function MemoForm() {
         value={horseWeight}
         onChange={(e) => setHorseWeight(e.target.value)}
         error={errors.horseWeight}
-        helperText={errors.horseWeight ? '必須項目です' : ''}
-        sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+        helperText={errors.horseWeight ? "必須項目です" : ""}
+        sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
       />
       {/* 回顧 */}
       <TextField
@@ -393,9 +393,9 @@ export default function MemoForm() {
         value={review}
         onChange={(e) => setReview(e.target.value)}
         error={errors.review}
-        helperText={errors.review ? '必須項目です' : ''}
+        helperText={errors.review ? "必須項目です" : ""}
         sx={{
-          fontSize: { xs: '0.9rem', sm: '1rem' },
+          fontSize: { xs: "0.9rem", sm: "1rem" },
           lineHeight: 1.6,
         }}
       />
@@ -405,12 +405,12 @@ export default function MemoForm() {
         variant="contained"
         sx={{
           mt: 2,
-          fontSize: { xs: '0.9rem', sm: '1rem' },
+          fontSize: { xs: "0.9rem", sm: "1rem" },
           py: { xs: 1, sm: 1.2 },
           px: { xs: 3, sm: 4 },
         }}
       >
-        {isSubmitting ? '登録中...' : '登録'}
+        {isSubmitting ? "登録中..." : "登録"}
       </Button>
       {/* 確認ダイアログの表示 */}
       <ConfirmDialog
