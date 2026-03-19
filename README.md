@@ -137,8 +137,9 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 7. メモはFirestoreに保存され、ログインユーザーごとに管理されます。
 8. スマートフォンからもアクセス可能で、レスポンシブ対応済みです。
 
-
 ## 📂 ディレクトリ構成
+
+<pre><code>
 my-memo-app/
 ├── public/                 # 公開用ファイル（画像、manifestなど）
 ├── src/
@@ -159,4 +160,4 @@ my-memo-app/
 ├── next.config.js          # Next.js 設定ファイル
 ├── package.json            # 依存関係とスクリプト定義
 └── README.md               # プロジェクト概要と使い方
-
+</code></pre>
