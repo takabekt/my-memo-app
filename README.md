@@ -1,5 +1,10 @@
 # MY-MEMO-APP
 
+![Next.js](https://img.shields.io/badge/Next.js-14-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.x-blue)
+![Firebase](https://img.shields.io/badge/Firebase-Enabled-orange)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-black)
+
 ## 📌 概要
 MY-MEMO-APPは、競馬ファンのためのレースメモ管理アプリです。  
 ユーザーはGoogleアカウントでログインし、気になる競走馬のレース結果を記録・管理できます。
