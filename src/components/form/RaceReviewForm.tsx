@@ -130,7 +130,7 @@ export default function RaceReviewForm({
           <Button 
             type="button" 
             variant="outlined" 
-            color="inherit" 
+            color="error"
             fullWidth 
             size="large" 
             onClick={() => setShowConfirm(true)}

@@ -79,7 +79,7 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
               sx={{ mt: 1 }}
             />
             <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
-              <Button onClick={() => setEditing(false)} size="small">
+              <Button onClick={() => setEditing(false)} color="error" size="small">
                 キャンセル
               </Button>
               <Button onClick={handleSave} variant="contained" size="small">
