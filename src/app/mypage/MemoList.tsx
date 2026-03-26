@@ -27,6 +27,8 @@ type Memo = {
   jockey: string;
   weight: string;
   horseWeight: string;
+  agari: string;
+  odds: string;
   createdAt: any;
 };
 export default function MemoList({
@@ -137,8 +139,14 @@ export default function MemoList({
       }}
     >
       {/*次走メモ*/}
-      {filterHorseName && user && (
-        <NextNoteBlock userId={user.uid} horseName={filterHorseName} editable={editableNextNote} />
+      {/* 実際に取得できたメモ（memos[0]）から馬名を取るようにする */}
+      {user && (filterHorseName || memos[0]?.horseName) && (
+        <NextNoteBlock 
+          userId={user.uid} 
+          // filterHorseName が空や不一致でも、リストにある本物の馬名を使う
+          horseName={filterHorseName || memos[0].horseName} 
+          editable={editableNextNote} 
+        />
       )}
       {memos.length === 0 ? (
         <Typography color="text.secondary">
@@ -223,6 +231,16 @@ export default function MemoList({
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏁</Typography>
               <Typography sx={fieldSx}>着順：{memo.rank}着</Typography>
+            </Box>
+            {/* 上がり3F */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>⚡</Typography>
+              <Typography sx={fieldSx}>上がり3F：{memo.agari}</Typography>
+            </Box>
+            {/* 単勝オッズ */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>💰</Typography>
+              <Typography sx={fieldSx}>単勝オッズ：{memo.odds}倍</Typography>
             </Box>
             {/* 回顧 */}
             <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mt: 1 }}>

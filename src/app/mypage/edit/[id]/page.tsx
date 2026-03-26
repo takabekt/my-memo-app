@@ -1,411 +1,91 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TextField, Button, Box, MenuItem } from "@mui/material";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase";
-import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
-import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { useSnackbar } from "notistack";
+import RaceReviewForm from "@/components/form/RaceReviewForm";
+import { RaceReview } from "@/types/race";
+import { CircularProgress, Box, Typography } from "@mui/material";
 
-// 編集画面
 export default function EditPage() {
-  // URLからIDを取得
   const params = useParams();
   const docId = Array.isArray(params.id) ? params.id[0] : params.id;
   const searchParams = useSearchParams();
   const router = useRouter();
-  // URLから遷移元のfromを取得
-  const from = searchParams.get("from");
+  const from = searchParams.get("from") || "/search";
+  const { enqueueSnackbar } = useSnackbar();
 
-  // 入力値
-  const [horseName, setHorseName] = useState("");
-  const [raceName, setRaceName] = useState("");
-  const [date, setDate] = useState("");
-  const [rank, setRank] = useState("");
-  const [review, setReview] = useState("");
-  const [raceCourse, setRaceCourse] = useState("");
-  const [courseDirection, setCourseDirection] = useState("");
-  const [surface, setSurface] = useState("");
-  const [distance, setDistance] = useState("");
-  const [trackCondition, setTrackCondition] = useState("");
-  const [horseNumber, setHorseNumber] = useState("");
-  const [jockey, setJockey] = useState("");
-  const [weight, setWeight] = useState("");
-  const [horseWeight, setHorseWeight] = useState("");
+  const [initialData, setInitialData] = useState<RaceReview | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
 
-  // エラー管理
-  const [errors, setErrors] = useState<Record<string, boolean>>({});
-  // ダイアログの表示制御
-  const [openConfirm, setOpenConfirm] = useState(false);
-
-  // 戻る処理
-  const handleConfirmBack = () => {
-    // 確認ダイアログを閉じる
-    setOpenConfirm(false);
-    // 遷移もとに戻る or 遷移元の指定がなければ検索画面に遷移
-    router.push(from || "/search");
-  };
-
-  // 距離データ（MemoForm と同じ）
-  const distanceData: Record<string, Record<string, number[]>> = {
-    札幌: { 芝: [1200, 1500, 1800, 2000, 2600], ダート: [1000, 1700, 2400] },
-    函館: { 芝: [1200, 1800, 2000, 2600], ダート: [1000, 1700, 2400] },
-    福島: { 芝: [1200, 1800, 2000, 2600], ダート: [1150, 1700, 2400] },
-    新潟: { 芝: [1000, 1400, 1600, 1800, 2000, 2200, 2400], ダート: [1200, 1800] },
-    東京: { 芝: [1400, 1600, 1800, 2000, 2400, 2500], ダート: [1300, 1400, 1600, 2100] },
-    中山: { 芝: [1200, 1600, 1800, 2000, 2200, 2500], ダート: [1200, 1800, 2400] },
-    中京: { 芝: [1200, 1400, 1600, 2000, 2200], ダート: [1200, 1400, 1800, 1900] },
-    京都: {
-      芝: [1200, 1400, 1600, 1800, 2000, 2200, 2400, 3000],
-      ダート: [1200, 1400, 1800, 1900],
-    },
-    阪神: { 芝: [1200, 1400, 1600, 1800, 2000, 2200, 2400], ダート: [1200, 1400, 1800, 2000] },
-    小倉: { 芝: [1200, 1700, 1800, 2000], ダート: [1000, 1700] },
-  };
-  // 距離の選択肢をコースと馬場から動的に生成
-  const availableDistances =
-    raceCourse && surface ? (distanceData[raceCourse]?.[surface] ?? []) : [];
-  // Firestore からデータ取得
+  // Firestore から既存データを取得
   useEffect(() => {
     const fetchData = async () => {
       const user = auth.currentUser;
-      if (!user) return;
+      if (!user || !docId) return;
+
       const ref = doc(db, "users", user.uid, "raceReviews", docId);
       const snapshot = await getDoc(ref);
+      
       if (snapshot.exists()) {
-        const data = snapshot.data();
-        setHorseName(data.horseName);
-        setRaceName(data.raceName);
-        setDate(data.date);
-        setRank(data.rank);
-        setReview(data.review);
-        setRaceCourse(data.raceCourse);
-        setCourseDirection(data.courseDirection);
-        setSurface(data.surface);
-        setDistance(data.distance);
-        setTrackCondition(data.trackCondition);
-        setHorseNumber(data.horseNumber);
-        setJockey(data.jockey);
-        setWeight(data.weight);
-        setHorseWeight(data.horseWeight);
+        setInitialData(snapshot.data() as RaceReview);
+      } else {
+        enqueueSnackbar("データが見つかりませんでした", { variant: "error" });
+        router.push(from);
       }
     };
     fetchData();
-  }, [docId]);
+  }, [docId, from, router, enqueueSnackbar]);
 
-  // 更新処理
-  const { enqueueSnackbar } = useSnackbar();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors = {
-      horseName: !horseName,
-      raceName: !raceName,
-      date: !date,
-      rank: !rank,
-      review: !review,
-      raceCourse: !raceCourse,
-      courseDirection: !courseDirection,
-      surface: !surface,
-      distance: !distance,
-      trackCondition: !trackCondition,
-      horseNumber: !horseNumber,
-      jockey: !jockey,
-      weight: !weight,
-      horseWeight: !horseWeight,
-    };
-    setErrors(newErrors);
-    if (Object.values(newErrors).includes(true)) {
-      alert("未入力の項目があります");
-      return;
-    }
+  // 更新処理（updateDoc）
+  const handleUpdate = async (data: RaceReview) => {
     const user = auth.currentUser;
-    if (!user) return;
-    // 二重送信防止
-    if (isSubmitting) return;
-    setIsSubmitting(true); // 更新中フラグON
-    const ref = doc(db, "users", user.uid, "raceReviews", docId);
-    // Firestore のデータを更新
-    await updateDoc(ref, {
-      horseName,
-      raceName,
-      date,
-      rank,
-      review,
-      raceCourse,
-      courseDirection,
-      surface,
-      distance,
-      trackCondition,
-      horseNumber,
-      jockey,
-      weight,
-      horseWeight,
-    });
-    setTimeout(() => {
-      // ✅ トースト通知を表示
-      enqueueSnackbar("メモを更新しました", { variant: "success" });
+    if (!user || !docId) return;
 
-      // 更新後は一覧ページへ戻る
-      router.push("/search");
-      // 更新中フラグOFF
+    setIsSubmitting(true);
+    try {
+      const ref = doc(db, "users", user.uid, "raceReviews", docId);
+      // スプレッド演算子で全項目を更新
+      await updateDoc(ref, { ...data });
+
+      enqueueSnackbar("メモを更新しました！", { variant: "success" });
+      router.push(from);
+    } catch (error) {
+      console.error("更新エラー:", error);
+      enqueueSnackbar("更新に失敗しました", { variant: "error" });
+    } finally {
       setIsSubmitting(false);
-    }, 3000); // 3秒後に遷移
+    }
   };
+
+  // 読み込み中の表示
+  if (!initialData) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
-    <Box
-      component="form"
-      onSubmit={handleUpdate}
-      noValidate
-      sx={{
-        mt: 4,
-        maxWidth: { xs: "100%", sm: 600 },
-        mx: "auto",
-        px: { xs: 2, sm: 0 },
-        pb: 6,
-      }}
-    >
-      {/*戻るボタン */}
-      <Button
-        variant="outlined"
-        onClick={(e) => {
-          e.preventDefault();
-          setOpenConfirm(true);
-        }}
-        sx={{
-          mb: 2,
-          fontSize: { xs: "0.85rem", sm: "1rem" },
-          py: { xs: 0.8, sm: 1 },
-          px: { xs: 2, sm: 3 },
-        }}
+    <Box sx={{ pb: 6 }}>
+      <Typography
+        variant="h5"
+        sx={{ textAlign: "center", fontWeight: "bold", mt: 2, mb: 3 }}
       >
-        戻る
-      </Button>
-      {/* 以下、MemoForm と同じ TextField 群 */}
-      <TextField
-        label="馬名"
-        fullWidth
-        margin="normal"
-        value={horseName}
-        onChange={(e) => setHorseName(e.target.value)}
-        error={errors.horseName}
-        helperText={errors.horseName ? "必須項目です" : ""}
-        sx={fieldSx}
-      />
-      <TextField
-        label="レース名"
-        fullWidth
-        margin="normal"
-        value={raceName}
-        onChange={(e) => setRaceName(e.target.value)}
-        error={errors.raceName}
-        helperText={errors.raceName ? "必須項目です" : ""}
-        sx={fieldSx}
-      />
-
-      <TextField
-        label="日付"
-        type="date"
-        fullWidth
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-        error={errors.date}
-        helperText={errors.date ? "必須項目です" : ""}
-        sx={dateFieldSx}
-      />
-
-      <TextField
-        label="順位"
-        type="number"
-        fullWidth
-        margin="normal"
-        value={rank}
-        onChange={(e) => setRank(e.target.value)}
-        error={errors.rank}
-        helperText={errors.rank ? "必須項目です" : ""}
-        sx={fieldSx}
-      />
-
-      <TextField
-        select
-        label="競馬場"
-        fullWidth
-        margin="normal"
-        value={raceCourse}
-        onChange={(e) => {
-          setRaceCourse(e.target.value);
-          setDistance("");
-        }}
-        error={errors.raceCourse}
-        helperText={errors.raceCourse ? "必須項目です" : ""}
-        sx={fieldSx}
-      >
-        <MenuItem value="">
-          <em>選択してください</em>
-        </MenuItem>
-        {Object.keys(distanceData).map((name) => (
-          <MenuItem key={name} value={name}>
-            {name}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        select
-        label="馬場タイプ"
-        fullWidth
-        margin="normal"
-        value={surface}
-        onChange={(e) => {
-          setSurface(e.target.value);
-          setDistance("");
-        }}
-        error={errors.surface}
-        helperText={errors.surface ? "必須項目です" : ""}
-        sx={fieldSx}
-      >
-        <MenuItem value="">
-          <em>選択してください</em>
-        </MenuItem>
-        <MenuItem value="芝">芝</MenuItem>
-        <MenuItem value="ダート">ダート</MenuItem>
-      </TextField>
-      <TextField
-        select
-        label="コース方向"
-        fullWidth
-        margin="normal"
-        value={courseDirection}
-        onChange={(e) => setCourseDirection(e.target.value)}
-        error={errors.courseDirection}
-        helperText={errors.courseDirection ? "必須項目です" : ""}
-        sx={fieldSx}
-      >
-        <MenuItem value="">
-          <em>選択してください</em>
-        </MenuItem>
-        <MenuItem value="右回り">右回り</MenuItem>
-        <MenuItem value="左回り">左回り</MenuItem>
-      </TextField>
-      <TextField
-        select
-        label="距離（m）"
-        fullWidth
-        margin="normal"
-        value={distance}
-        onChange={(e) => setDistance(e.target.value)}
-        disabled={!raceCourse || !surface}
-        error={errors.distance}
-        helperText={errors.distance ? "必須項目です" : ""}
-        sx={fieldSx}
-      >
-        <MenuItem value="">
-          <em>選択してください</em>
-        </MenuItem>
-        {availableDistances.map((d) => (
-          <MenuItem key={d} value={d}>
-            {d}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        select
-        label="馬場状態"
-        fullWidth
-        margin="normal"
-        value={trackCondition}
-        onChange={(e) => setTrackCondition(e.target.value)}
-        error={errors.trackCondition}
-        helperText={errors.trackCondition ? "必須項目です" : ""}
-        sx={fieldSx}
-      >
-        <MenuItem value="">
-          <em>選択してください</em>
-        </MenuItem>
-        <MenuItem value="良">良☀️</MenuItem>
-        <MenuItem value="稍重">稍重💧</MenuItem>
-        <MenuItem value="重">重🌧</MenuItem>
-        <MenuItem value="不良">不良⛈</MenuItem>
-      </TextField>
-      <TextField
-        label="馬番"
-        type="number"
-        fullWidth
-        margin="normal"
-        value={horseNumber}
-        onChange={(e) => setHorseNumber(e.target.value)}
-        error={errors.horseNumber}
-        helperText={errors.horseNumber ? "必須項目です" : ""}
-        sx={fieldSx}
-      />
-      <TextField
-        label="騎手"
-        fullWidth
-        margin="normal"
-        value={jockey}
-        onChange={(e) => setJockey(e.target.value)}
-        error={errors.jockey}
-        helperText={errors.jockey ? "必須項目です" : ""}
-        sx={fieldSx}
-      />
-      <TextField
-        label="斤量（kg）"
-        type="number"
-        fullWidth
-        margin="normal"
-        value={weight}
-        onChange={(e) => setWeight(e.target.value)}
-        error={errors.weight}
-        helperText={errors.weight ? "必須項目です" : ""}
-        sx={fieldSx}
-      />
-      <TextField
-        label="馬体重（kg）"
-        type="number"
-        fullWidth
-        margin="normal"
-        value={horseWeight}
-        onChange={(e) => setHorseWeight(e.target.value)}
-        error={errors.horseWeight}
-        helperText={errors.horseWeight ? "必須項目です" : ""}
-        sx={fieldSx}
-      />
-      <TextField
-        label="回顧"
-        fullWidth
-        multiline
-        rows={4}
-        margin="normal"
-        value={review}
-        onChange={(e) => setReview(e.target.value)}
-        error={errors.review}
-        helperText={errors.review ? "必須項目です" : ""}
-        sx={{
-          fontSize: { xs: "0.9rem", sm: "1rem" },
-          lineHeight: 1.6,
-        }}
-      />
-      {/* 更新ボタン */}
-      <Button
-        type="submit"
-        variant="contained"
-        sx={{
-          mt: 2,
-          fontSize: { xs: "0.9rem", sm: "1rem" },
-          py: { xs: 1, sm: 1.2 },
-          px: { xs: 3, sm: 4 },
-        }}
-      >
-        {isSubmitting ? "更新中..." : "更新"}
-      </Button>
-      {/* 確認ダイアログの表示 */}
-      <ConfirmDialog
-        open={openConfirm}
-        onClose={() => setOpenConfirm(false)}
-        onConfirm={handleConfirmBack}
+        レース回顧編集
+      </Typography>
+      {/* フォームを呼び出し、保存命令(onSubmit)を渡す */}
+      <RaceReviewForm
+        title=""
+        submitLabel="更新する"
+        initialData={initialData} // 取得したデータを流し込む
+        onSubmit={handleUpdate}   // 更新用の関数を渡す
+        onCancel={() => router.push(from)}
+        cancelMessage="編集内容を破棄して戻りますか？"
+        isSubmitting={isSubmitting}
       />
     </Box>
   );
