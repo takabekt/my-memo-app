@@ -17,20 +17,36 @@ type Memo = {
   horseName: string;
   date: string;
   rank: string;
-  review: string;
+  horseCount: string;
+  popularity: string;
   raceCourse: string;
-  courseDirection: string;
   surface: string;
+  courseDirection: string;
   distance: string;
   trackCondition: string;
   horseNumber: string;
+  passingOrder: string;
   jockey: string;
   weight: string;
   horseWeight: string;
   agari: string;
-  odds: string;
+  timeDiff: string; 
+  racePace: string; 
+  review: string;
+  grade: string;
   createdAt: any;
 };
+
+// ペース表示用
+const getPaceBadge = (pace: string) => {
+  switch (pace) {
+    case "H": return { label: "ハイ", color: "#d32f2f", bg: "#fdecea" }; // 赤系
+    case "M": return { label: "ミドル", color: "#2e7d32", bg: "#edf7ed" }; // 緑系
+    case "S": return { label: "スロー", color: "#0288d1", bg: "#e1f5fe" }; // 青系
+    default: return { label: "不明", color: "#757575", bg: "#f5f5f5" };
+  }
+};
+
 export default function MemoList({
   filterHorseName,
   showActions = true,
@@ -167,6 +183,7 @@ export default function MemoList({
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
             }}
           >
+            {/* レース名 */}
             <Typography
               variant="h5"
               sx={{
@@ -181,6 +198,11 @@ export default function MemoList({
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography sx={{ width: "1.4em", textAlign: "center" }}>📅</Typography>
               <Typography sx={dateFieldSx}>日付：{memo.date}</Typography>
+            </Box>
+            {/* グレード */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>📏</Typography>
+              <Typography sx={fieldSx}>グレード：{memo.grade}</Typography>
             </Box>
             {/* 競馬場 */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -202,16 +224,64 @@ export default function MemoList({
               <Typography sx={{ width: "1.4em", textAlign: "center" }}>📏</Typography>
               <Typography sx={fieldSx}>距離：{memo.distance}m</Typography>
             </Box>
+            {/* 着順 */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏁</Typography>
+              <Typography sx={fieldSx}>着順：{memo.rank}着</Typography>
+            </Box>
+            {/* 人気・頭数*/}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>📊</Typography>
+              <Typography sx={fieldSx}>人気/頭数：{memo.popularity}人気 / {memo.horseCount}頭</Typography>
+            </Box>
+            {/* 馬番 */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐎</Typography>
+              <Typography sx={fieldSx}>馬番：{memo.horseNumber}番</Typography>
+            </Box>
             {/* 馬場状態 */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography sx={{ width: "1.4em", textAlign: "center" }}>🟫</Typography>
               <Typography sx={fieldSx}>馬場状態：{memo.trackCondition}</Typography>
             </Box>
-            {/* 馬番 */}
+            {/* 通過順 */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐎</Typography>
-              <Typography sx={fieldSx}>馬番：{memo.horseNumber}</Typography>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>🔄</Typography>
+              <Typography sx={fieldSx}>通過順：{memo.passingOrder}</Typography>
             </Box>
+            {/* 上がり3F */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>⚡</Typography>
+              <Typography sx={fieldSx}>上がり3F：{memo.agari}</Typography>
+            </Box>
+            {/* 着差 */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>⏱</Typography>
+              <Typography sx={fieldSx}>着差：{memo.timeDiff}秒</Typography>
+            </Box>
+            {/* ペース */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ width: "1.4em", textAlign: "center" }}>📈</Typography>
+              <Typography sx={fieldSx}>
+                ペース：
+                <Box
+                  component="span"
+                  sx={{
+                    color: getPaceBadge(memo.racePace).color, // 定義済みの色を使用
+                    bgcolor: getPaceBadge(memo.racePace).bg,   // 定義済みの背景色を使用
+                    px: 1,
+                    py: 0.1,
+                    borderRadius: 1,
+                    fontWeight: "bold",
+                    fontSize: "0.85rem",
+                    border: `1px solid ${getPaceBadge(memo.racePace).color}`,
+                    ml: 0.5,
+                  }}
+                >
+                  {getPaceBadge(memo.racePace).label}
+                </Box>
+              </Typography>
+            </Box>       
             {/* 騎手 */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography sx={{ width: "1.4em", textAlign: "center" }}>👤</Typography>
@@ -226,21 +296,6 @@ export default function MemoList({
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography sx={{ width: "1.4em", textAlign: "center" }}>🐴</Typography>
               <Typography sx={fieldSx}>馬体重：{memo.horseWeight}kg</Typography>
-            </Box>
-            {/* 着順 */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography sx={{ width: "1.4em", textAlign: "center" }}>🏁</Typography>
-              <Typography sx={fieldSx}>着順：{memo.rank}着</Typography>
-            </Box>
-            {/* 上がり3F */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography sx={{ width: "1.4em", textAlign: "center" }}>⚡</Typography>
-              <Typography sx={fieldSx}>上がり3F：{memo.agari}</Typography>
-            </Box>
-            {/* 単勝オッズ */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography sx={{ width: "1.4em", textAlign: "center" }}>💰</Typography>
-              <Typography sx={fieldSx}>単勝オッズ：{memo.odds}倍</Typography>
             </Box>
             {/* 回顧 */}
             <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mt: 1 }}>

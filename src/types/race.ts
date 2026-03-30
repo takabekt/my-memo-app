@@ -2,28 +2,26 @@
 export interface RaceReview {
   id?: string;             // FirestoreのドキュメントID（編集時に使用）
   horseName: string;       // 馬名
-  raceName: string;        // レース名
   date: string;            // 日付
-  rank: string;            // 順位
+  raceName: string;        // レース名
+  grade: string;           // レース格付け（G1, G2など）
+  horseCount: string;      // 頭数
   raceCourse: string;      // 競馬場
   surface: "芝" | "ダート" | ""; // 馬場タイプ
   courseDirection: "右回り" | "左回り" | ""; // コース方向
   distance: string;        // 距離
   trackCondition: "良" | "稍重" | "重" | "不良" | ""; // 馬場状態
+  popularity: string;      // 人気
   horseNumber: string;     // 馬番
+  rank: string;            // 順位
+  passingOrder: string;   // 通過順（例: 2-2-3-2）
   jockey: string;          // 騎手
   weight: string;          // 斤量
   horseWeight: string;     // 馬体重
+  agari: string;           // 上がり3Fタイム
+  timeDiff: string;        // 1位との着差（秒)
+  racePace: "H" | "M" | "S" | ""; // ペース
   review: string;          // 回顧（メモ）
-  
-  // --- 来週のAI連携で追加する予定の項目（先に枠だけ作っておきます） ---
-  grade?: string;          // レース格付け（G1, G2など）
-  odds?: string;           // 単勝オッズ
-  popularity?: string;     // 人気
-  passingOrder?: string;   // 通過順（例: 2-2-3-2）
-  agari?: string;          // 上がり3Fタイム
-  time?: string;           // 走破タイム
-  createdAt?: any;         // 作成日時
 }
 
 // 競馬場ごとの距離データ
