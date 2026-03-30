@@ -44,9 +44,10 @@ export default function NewMemoPage() {
   // 初期の空データ
   const initialData: RaceReview = {
     horseName: "", raceName: "", date: new Date().toISOString().split("T")[0],
-    rank: "", raceCourse: "", surface: "芝", courseDirection: "右回り",
+    rank: "", raceCourse: "", surface: "芝", courseDirection: "",
     distance: "", trackCondition: "良", horseNumber: "", jockey: "",
-    weight: "", horseWeight: "", review: "", agari: "", odds: ""
+    weight: "", horseWeight: "", review: "", agari: "", horseCount: "",
+    popularity: "",grade: "",passingOrder: "",timeDiff: "",racePace: "M",
   };
 
   return (
