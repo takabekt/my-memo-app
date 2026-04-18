@@ -11,7 +11,7 @@ type Props = {
   editable: boolean; // true: 編集可, false: 表示のみ
 };
 /**
- * 次走メモ表示・編集コンポーネント
+ * 次走メモ情報表示・編集コンポーネント
  *
  * Props:
  * - userId: Firebase Authentication の UID（ユーザーごとのメモを管理）
@@ -24,6 +24,8 @@ type Props = {
 
 export default function NextNoteBlock({ userId, horseName, editable }: Props) {
   const [note, setNote] = useState("");
+  const [nextRaceName, setNextRaceName] = useState("");
+  const [nextHorseNumber, setNextHorseNumber] = useState("");
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,10 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
       const ref = doc(db, "users", userId, "nextNotes", horseName);
       const snap = await getDoc(ref);
       if (snap.exists()) {
-        setNote(snap.data().note || "");
+        const data = snap.data();
+        setNote(data.note || "");
+        setNextRaceName(data.nextRaceName || "");
+        setNextHorseNumber(data.nextHorseNumber || "");
       }
       setLoading(false);
     };
@@ -44,6 +49,8 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
       ref,
       {
         note,
+        nextRaceName,
+        nextHorseNumber,
         updatedAt: serverTimestamp(),
       },
       { merge: true }
@@ -54,68 +61,61 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
   return (
     <Box
       sx={{
-        mb: 2,
-        p: 2,
-        bgcolor: "#f9fbe7",
-        borderRadius: 1,
-        maxWidth: 600,
-        width: "100%",
-        overflow: "hidden",
+        mb: 2, p: 2, bgcolor: "#f9fbe7", borderRadius: 1,
+        maxWidth: 600, width: "100%", overflow: "hidden",
       }}
     >
       <Typography variant="subtitle2" color="text.secondary">
         次走メモ（総括）
       </Typography>
 
-      {editable ? (
-        editing ? (
-          <>
+      {/* 1. 編集モードの時（editable かつ editing） */}
+      {editable && editing ? (
+        <>
+          <Box sx={{ mt: 1, display: "flex", gap: 1, mb: 1 }}>
             <TextField
-              multiline
+              label="次走予定レース"
               fullWidth
-              minRows={3}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              sx={{ mt: 1 }}
+              size="small"
+              value={nextRaceName}
+              onChange={(e) => setNextRaceName(e.target.value)}
             />
-            <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
-              <Button onClick={() => setEditing(false)} color="error" size="small">
-                キャンセル
-              </Button>
-              <Button onClick={handleSave} variant="contained" size="small">
-                保存
-              </Button>
-            </Box>
-          </>
-        ) : (
-          <>
-            <Typography
-              sx={{
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-                overflowWrap: "break-word",
-                mt: 1,
-              }}
-            >
-              {note || "まだ次走メモはありません。"}
-            </Typography>
-
-            <Button onClick={() => setEditing(true)} sx={{ mt: 1 }} size="small">
-              編集
+            <TextField
+              label="馬番"
+              sx={{ width: 80 }}
+              size="small"
+              value={nextHorseNumber}
+              onChange={(e) => setNextHorseNumber(e.target.value)}
+            />
+          </Box>
+          <TextField
+            multiline
+            fullWidth
+            minRows={3}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+          <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+            <Button onClick={() => setEditing(false)} color="error" size="small">
+              キャンセル
             </Button>
-          </>
-        )
+            <Button onClick={handleSave} variant="contained" size="small">
+              保存
+            </Button>
+          </Box>
+        </>
       ) : (
-        <Box
-          sx={{
-            maxWidth: 600,
-            width: "100%",
-            overflow: "hidden",
-          }}
-        >
+        /* 2. 表示モードの時（editable が false、または編集モードじゃない時） */
+        <Box sx={{ mt: 1 }}>
+          {/* 次走情報を表示（ここを追加！） */}
+          {(nextRaceName || nextHorseNumber) && (
+            <Typography variant="body2" sx={{ fontWeight: "bold", color: "#e65100", mb: 0.5 }}>
+              🚩 次走：{nextRaceName || "未定"} {nextHorseNumber ? `${nextHorseNumber}番` : ""}
+            </Typography>
+          )}
+
           <Typography
             sx={{
-              display: "block",
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
               overflowWrap: "break-word",
@@ -125,6 +125,13 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
           >
             {note || "まだ次走メモはありません。"}
           </Typography>
+
+          {/* 編集権限がある場合のみ、編集ボタンを出す */}
+          {editable && (
+            <Button onClick={() => setEditing(true)} sx={{ mt: 1 }} size="small">
+              編集
+            </Button>
+          )}
         </Box>
       )}
     </Box>
