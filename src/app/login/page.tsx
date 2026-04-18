@@ -2,7 +2,7 @@
 
 import { Button, Typography, Box, Container } from "@mui/material";
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../firebase";
+import { auth, provider } from "@/firebase";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 

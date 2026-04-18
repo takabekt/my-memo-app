@@ -2,9 +2,8 @@
 
 import { useEffect } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "../../firebase";
+import { auth, db } from "@/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../../firebase";
 
 // ログインしたユーザーがFirestoreに未登録なら、自動でユーザー情報を保存するコンポーネント
 export default function ClientAuthProvider() {

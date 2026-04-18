@@ -1,10 +1,10 @@
 "use client";
 
-import RaceReviewForm from "../../../components/form/RaceReviewForm";
-import AuthGuard from "../../../components/auth/AuthGuard";
+import RaceReviewForm from "@/components/form/RaceReviewForm";
+import AuthGuard from "@/components/auth/AuthGuard";
 import { Typography } from "@mui/material";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "../../../firebase"; 
+import { db, auth } from "@/firebase"; 
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
