@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import RaceReviewForm from "@/components/form/RaceReviewForm";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { Typography } from "@mui/material";
@@ -10,7 +11,7 @@ import { useSnackbar } from "notistack";
 import { useState, useMemo } from "react";
 import { RaceReview } from "@/types/race";
 
-export default function NewMemoPage() {
+function NewMemoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -94,5 +95,14 @@ export default function NewMemoPage() {
         isSubmitting={isSubmitting}
       />
     </AuthGuard>
+  );
+}
+
+export default function NewMemoPage() {
+  return (
+    // 「URLを読み取れるようになるまで、これを出しといて」と指定する
+    <Suspense fallback={<div>読み込み中...</div>}>
+      <NewMemoContent />
+    </Suspense>
   );
 }
