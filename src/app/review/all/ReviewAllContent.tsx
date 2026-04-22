@@ -4,6 +4,17 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Box, Typography, Paper } from "@mui/material";
 import MemoList from "@/app/mypage/MemoList";
+import { useEffect, useState, useMemo } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/firebase";
+import { useAuth } from "@/hooks/useAuth";
+
+// 馬ごとの情報を保持する型
+type HorseInfo = {
+  name: string;
+  nextHorseNumber: string;
+};
+
 // 選択した馬のメモコンポーネント
 export default function ReviewAllContent() {
   // クエリパラメータから馬名を取得
@@ -11,6 +22,8 @@ export default function ReviewAllContent() {
   const horseQuery = searchParams.get("horses");
   const horseNames = horseQuery ? horseQuery.split(",").map(decodeURIComponent) : [];
   const queryString = searchParams.toString();
+  const [horseDataList, setHorseDataList] = useState<HorseInfo[]>([]);
+  const { user } = useAuth();
   // 馬が選ばれていない時の表示
   if (horseNames.length === 0) {
     return (
@@ -19,6 +32,38 @@ export default function ReviewAllContent() {
       </Typography>
     );
   }
+  // 各馬の次走情報を取得(非同期で同時取得)
+  useEffect(() => {
+    if (!user) return;
+    const fetchAllNextNotes = async () => {
+      const dataPromises = horseNames.map(async (name) => {
+        const ref = doc(db, "users", user.uid, "nextNotes", name);
+        const snap = await getDoc(ref);
+        const data = snap.exists() ? snap.data() : {};
+        return {
+          name,
+          nextHorseNumber: data.nextHorseNumber || "99", // 馬番がない場合は後ろに行くように99を設定
+        };
+      });
+      const results = await Promise.all(dataPromises);
+      setHorseDataList(results);
+    };
+    fetchAllNextNotes();
+  }, [user, horseNames]);
+
+  // useMemoでソートを実行
+  const sortedHorses = useMemo(() => {
+    return [...horseDataList].sort((a, b) => {
+      // 優先順位1: 馬番の昇順
+      const numA = parseInt(a.nextHorseNumber);
+      const numB = parseInt(b.nextHorseNumber);
+      if (numA !== numB) return numA - numB;
+      
+      // 優先順位2: 馬名の五十音順
+      return a.name.localeCompare(b.name, "ja");
+    });
+  }, [horseDataList]);
+  
   // 横スクロールで馬ごとのメモを表示
   return (
     <Box
@@ -29,9 +74,9 @@ export default function ReviewAllContent() {
         pb: 2,
       }}
     >
-      {horseNames.map((name) => (
+      {sortedHorses.map((horse) => (
         <Paper
-          key={name}
+          key={horse.name}
           elevation={3}
           sx={{
             minWidth: 300,
@@ -47,7 +92,7 @@ export default function ReviewAllContent() {
             variant="h6"
             component={Link}
             // 馬名をクリックすると、その馬のメモ一覧画面に遷移
-            href={`/horse/${encodeURIComponent(name)}?from=${encodeURIComponent(`/review/all?${queryString}`)}`}
+            href={`/horse/${encodeURIComponent(horse.name)}?from=${encodeURIComponent(`/review/all?${queryString}`)}`}
             sx={{
               fontWeight: "bold",
               mb: 2,
@@ -59,11 +104,11 @@ export default function ReviewAllContent() {
               cursor: "pointer",
             }}
           >
-            {name}
+            {horse.name}
           </Typography>
           {/*メモ一覧 */}
           <MemoList
-            filterHorseName={name}
+            filterHorseName={horse.name}
             showActions={false} // メモの編集・削除ボタンを非表示
             editableNextNote={false} // 次走メモの編集・削除ボタンを非表示
           />
