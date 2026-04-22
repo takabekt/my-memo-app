@@ -5,15 +5,19 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import { Typography } from "@mui/material";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/firebase"; 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { RaceReview } from "@/types/race";
 
 export default function NewMemoPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { enqueueSnackbar } = useSnackbar();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // URLから horseName を取得（なければ空文字）
+  const queryHorseName = searchParams.get("horseName") || "";
 
   // 新規登録用の保存関数
   const handleSave = async (data: RaceReview) => {
@@ -30,8 +34,9 @@ export default function NewMemoPage() {
       });
       // トースト通知
       enqueueSnackbar("メモを登録しました！", { variant: "success" }); 
-       // 検索画面へ戻る
-      router.push("/search");
+      // 戻り先URLがあればそこへ、なければ/searchへ
+      const from = searchParams.get("from") || "/search";
+      router.push(from);
     } catch (error) {
       console.error("保存エラー:", error);
       enqueueSnackbar("登録に失敗しました", { variant: "error" });
@@ -42,13 +47,29 @@ export default function NewMemoPage() {
   };
 
   // 初期の空データ
-  const initialData: RaceReview = {
-    horseName: "", raceName: "", date: new Date().toISOString().split("T")[0],
-    rank: "", raceCourse: "", surface: "芝", courseDirection: "",
-    distance: "", trackCondition: "良", horseNumber: "", jockey: "",
-    weight: "", horseWeight: "", review: "", agari: "", horseCount: "",
-    popularity: "",grade: "",passingOrder: "",timeDiff: "",racePace: "M",
-  };
+  const initialData: RaceReview = useMemo(() => ({
+    horseName: queryHorseName,
+    raceName: "",
+    date: new Date().toISOString().split("T")[0],
+    rank: "",
+    raceCourse: "",
+    surface: "芝",
+    courseDirection: "",
+    distance: "",
+    trackCondition: "良",
+    horseNumber: "",
+    jockey: "",
+    weight: "",
+    horseWeight: "",
+    review: "",
+    agari: "",
+    horseCount: "",
+    popularity: "",
+    grade: "",
+    passingOrder: "",
+    timeDiff: "",
+    racePace: "M",
+  }), [queryHorseName]);
 
   return (
     <AuthGuard>
