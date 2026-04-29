@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import { Box, Typography, TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase";
 
@@ -55,8 +55,8 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
         note,
         nextRaceName,
         nextHorseNumber,
-        gender, 
-        age,    
+        gender,
+        age,
         updatedAt: serverTimestamp(),
       },
       { merge: true }
@@ -71,33 +71,40 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
         maxWidth: 600, width: "100%", overflow: "hidden",
       }}
     >
-      <Typography 
-        variant="h6" 
-        sx={{ 
-          fontWeight: "bold", 
-          color: "text.primary", 
-          mt: 0.5, 
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: "bold",
+          color: "text.primary",
+          mt: 0.5,
           mb: 1,
-          fontSize: "1.5rem" 
+          fontSize: "1.5rem"
         }}
       >
         馬情報
       </Typography>
-      {/* 1. 編集モードの時（editable かつ editing） */}
+      {/* 編集モードの時（editable かつ editing） */}
       {editable && editing ? (
         <>
           <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 1 }}>
             性別・年齢
           </Typography>
           <Box sx={{ mt: 1, display: "flex", gap: 1, mb: 2 }}>
-            <TextField
-              label="性別"
-              placeholder="牡"
-              sx={{ width: 80 }}
-              size="small"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-            />
+            <FormControl size="small" sx={{ width: 100 }}>
+              <InputLabel id="gender-select-label">性別</InputLabel>
+              <Select
+                labelId="gender-select-label"
+                value={gender}
+                label="性別"
+                onChange={(e) => setGender(e.target.value)}
+                sx={{ color: gender === "牝" ? "#d32f2f" : "inherit" }}
+              >
+                <MenuItem value="">未設定</MenuItem>
+                <MenuItem value="牡">牡</MenuItem>
+                <MenuItem value="牝" sx={{ color: "#d32f2f" }}>牝</MenuItem>
+                <MenuItem value="セン">セン</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="年齢"
               placeholder="3"
@@ -144,11 +151,18 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
           </Box>
         </>
       ) : (
-        /* 2. 表示モードの時（editable が false、または編集モードじゃない時） */
+        /* 表示モードの時（editable が false、または編集モードじゃない時） */
         <Box sx={{ mt: 1 }}>
           {/* 馬情報を表示 */}
           {(gender || age) && (
-            <Typography variant="body2" sx={{ fontWeight: "bold", color: "text.primary", mb: 0.5 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: "bold",
+                // gender が "牝" の時だけ赤、それ以外は通常の色
+                color: gender === "牝" ? "#d32f2f" : "text.primary",
+              }}
+            >
               {gender}{age ? `${age}歳` : ""}
             </Typography>
           )}
