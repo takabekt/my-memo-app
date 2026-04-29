@@ -24,8 +24,10 @@ type Props = {
 
 export default function NextNoteBlock({ userId, horseName, editable }: Props) {
   const [note, setNote] = useState("");
-  const [nextRaceName, setNextRaceName] = useState("");
-  const [nextHorseNumber, setNextHorseNumber] = useState("");
+  const [nextRaceName, setNextRaceName] = useState(""); // 次走レース
+  const [nextHorseNumber, setNextHorseNumber] = useState(""); // 次走レース馬番
+  const [gender, setGender] = useState(""); // 性別
+  const [age, setAge] = useState("");       // 年齢
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +40,8 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
         setNote(data.note || "");
         setNextRaceName(data.nextRaceName || "");
         setNextHorseNumber(data.nextHorseNumber || "");
+        setGender(data.gender || "");
+        setAge(data.age || "");
       }
       setLoading(false);
     };
@@ -51,6 +55,8 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
         note,
         nextRaceName,
         nextHorseNumber,
+        gender, 
+        age,    
         updatedAt: serverTimestamp(),
       },
       { merge: true }
@@ -65,13 +71,46 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
         maxWidth: 600, width: "100%", overflow: "hidden",
       }}
     >
-      <Typography variant="subtitle2" color="text.secondary">
-        次走メモ（総括）
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          fontWeight: "bold", 
+          color: "text.primary", 
+          mt: 0.5, 
+          mb: 1,
+          fontSize: "1.5rem" 
+        }}
+      >
+        馬情報
       </Typography>
-
       {/* 1. 編集モードの時（editable かつ editing） */}
       {editable && editing ? (
         <>
+          <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 1 }}>
+            性別・年齢
+          </Typography>
+          <Box sx={{ mt: 1, display: "flex", gap: 1, mb: 2 }}>
+            <TextField
+              label="性別"
+              placeholder="牡"
+              sx={{ width: 80 }}
+              size="small"
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+            />
+            <TextField
+              label="年齢"
+              placeholder="3"
+              sx={{ width: 80 }}
+              size="small"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+            />
+          </Box>
+
+          <Typography variant="subtitle2" color="text.secondary">
+            次走メモ（総括）
+          </Typography>
           <Box sx={{ mt: 1, display: "flex", gap: 1, mb: 1 }}>
             <TextField
               label="次走予定レース"
@@ -107,7 +146,13 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
       ) : (
         /* 2. 表示モードの時（editable が false、または編集モードじゃない時） */
         <Box sx={{ mt: 1 }}>
-          {/* 次走情報を表示（ここを追加！） */}
+          {/* 馬情報を表示 */}
+          {(gender || age) && (
+            <Typography variant="body2" sx={{ fontWeight: "bold", color: "text.primary", mb: 0.5 }}>
+              {gender}{age ? `${age}歳` : ""}
+            </Typography>
+          )}
+          {/* 次走情報を表示 */}
           {(nextRaceName || nextHorseNumber) && (
             <Typography variant="body2" sx={{ fontWeight: "bold", color: "#e65100", mb: 0.5 }}>
               🚩 次走：{nextRaceName || "未定"} {nextHorseNumber ? `${nextHorseNumber}番` : ""}
