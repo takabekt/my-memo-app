@@ -1,18 +1,22 @@
 "use client";
 
 import { Suspense } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Typography, Button } from "@mui/material";
 import ReviewAllContent from "./ReviewAllContent";
 // 全頭回顧ビュー画面
-export default function ReviewAllPage() {
+function ReviewAllPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // 検索画面から渡された戻り先を取得。なければデフォルトの /search
+  const from = searchParams.get("from") || "/search";
 
   return (
     <Box sx={{ px: 2, py: 4 }}>
       {/* 戻るボタン */}
       <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
-        <Button variant="outlined" onClick={() => router.push("/search")}>
+        <Button variant="outlined" onClick={() => router.push(from)}>
           戻る
         </Button>
       </Box>
@@ -34,5 +38,13 @@ export default function ReviewAllPage() {
         <ReviewAllContent />
       </Suspense>
     </Box>
+  );
+}
+
+export default function ReviewAllPageWrapper() {
+  return (
+    <Suspense fallback={<Typography align="center">ページを準備中...</Typography>}>
+      <ReviewAllPage />
+    </Suspense>
   );
 }

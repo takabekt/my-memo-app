@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "@/firebase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Box,
   Typography,
@@ -32,12 +32,15 @@ type HorseInfo = {
 };
 
 // 検索画面
-export default function SearchPage() {
+function SearchPage() {
   // 検索ボックスに入力された文字列を管理
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("q") || "";
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   // Firebaseから取得した馬情報の一覧を管理
   const [horses, setHorses] = useState<HorseInfo[]>([]);
   const router = useRouter();
+
   // チェックボックスの選択状態を管理
   const [selectedNames, setSelectedNames] = useState<string[]>([]);
 
@@ -103,6 +106,13 @@ export default function SearchPage() {
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  // 検索入力クリア関数
+  const clearSearch = () => {
+    setSearchQuery("");
+    // URLの「?q=...」を消して、元の /search に戻す
+    router.replace("/search", { scroll: false });
+  };
+
   return (
     // 画面全体のコンテナ　中央寄せで、幅を600pxに設定
     <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
@@ -115,12 +125,17 @@ export default function SearchPage() {
         variant="outlined" // 外枠を設定
         fullWidth // 親の幅に合わせて横幅を設定
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={(e) => {
+          const val = e.target.value;
+          setSearchQuery(val);
+          // 検索ワードをURLに保存
+          router.replace(`/search?q=${encodeURIComponent(val)}`, { scroll: false });
+        }}
         sx={{ mb: 3 }}
         InputProps={{
           endAdornment: searchQuery && (
             <IconButton
-              onClick={() => setSearchQuery("")}
+              onClick={clearSearch}
               edge="end"
               size="small"
               aria-label="クリア"
@@ -155,19 +170,21 @@ export default function SearchPage() {
         </Button>
         <Box sx={{ display: "flex", gap: 1 }}>
           {/* 全頭回顧ビューへボタン */}
-          <Link
-            // 選択した馬名をクエリに設定
-            href={`/review/all?horses=${selectedNames.map(encodeURIComponent).join(",")}`}
-            passHref
+          <Button
+            variant="contained" // 塗りつぶし
+            color="success"
+            disabled={selectedNames.length === 0}
+            onClick={() => {
+              // 現在の検索ワード付きの自画住所を作る（例: /search?q=リバティ）
+              const backUrl = `/search?q=${encodeURIComponent(searchQuery)}`;
+              // 選んだ馬のリストを作る
+              const horseList = selectedNames.map(encodeURIComponent).join(",");
+              // 全体を組み立てる
+              router.push(`/review/all?horses=${horseList}&from=${encodeURIComponent(backUrl)}`);
+            }}
           >
-            <Button
-              variant="contained" // 塗りつぶし
-              color="success"
-              disabled={selectedNames.length === 0}
-            >
-              全頭回顧ビューへ
-            </Button>
-          </Link>
+            全頭回顧ビューへ
+          </Button>
           {/* 新規登録ボタン */}
           <Link href={`/mypage/new?from=/search`} passHref>
             <Button variant="contained" color="primary">
@@ -208,11 +225,16 @@ export default function SearchPage() {
                   }}
                 />
                 <Box sx={{ ml: 4, flexGrow: 1, py: 1 }}>
-                  {/* 1. 馬名部分（これまでの ListItemText の中身を Typography に変更） */}
+                  {/* 馬名部分 */}
                   <Typography
-                    onClick={() =>
-                      router.push(`/horse/${encodeURIComponent(horse.name)}?from=/search`)
-                    }
+                    onClick={() => {
+                      // 現在の検索ワード付きの自画住所を作る（例: /search?q=リバティ）
+                      const currentPathWithQuery = `/search?q=${encodeURIComponent(searchQuery)}`;
+                      // fromに詰めて詳細画面へ飛ばす
+                      router.push(
+                        `/horse/${encodeURIComponent(horse.name)}?from=${encodeURIComponent(currentPathWithQuery)}`
+                      );
+                    }}
                     sx={{
                       cursor: "pointer",
                       fontSize: "1.2rem",
@@ -232,7 +254,7 @@ export default function SearchPage() {
                     )}
                   </Typography>
 
-                  {/* 2. 追加する詳細情報行 */}
+                  {/* 詳細情報 */}
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 0.5 }}>
                     {(horse.gender || horse.age) && (
                       <Typography
@@ -295,5 +317,17 @@ export default function SearchPage() {
         </Box>
       )}
     </Box>
+  );
+}
+
+export default function SearchPageWrapper() {
+  return (
+    <Suspense fallback={
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Typography>読み込み中...</Typography>
+      </Box>
+    }>
+      <SearchPage />
+    </Suspense>
   );
 }
