@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Typography, Button } from "@mui/material";
 import ReviewAllContent from "./ReviewAllContent";
 // 全頭回顧ビュー画面
-export default function ReviewAllPage() {
+function ReviewAllPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -38,5 +38,13 @@ export default function ReviewAllPage() {
         <ReviewAllContent />
       </Suspense>
     </Box>
+  );
+}
+
+export default function ReviewAllPageWrapper() {
+  return (
+    <Suspense fallback={<Typography align="center">ページを準備中...</Typography>}>
+      <ReviewAllPage />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -32,7 +32,7 @@ type HorseInfo = {
 };
 
 // 検索画面
-export default function SearchPage() {
+function SearchPage() {
   // 検索ボックスに入力された文字列を管理
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
@@ -317,5 +317,17 @@ export default function SearchPage() {
         </Box>
       )}
     </Box>
+  );
+}
+
+export default function SearchPageWrapper() {
+  return (
+    <Suspense fallback={
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Typography>読み込み中...</Typography>
+      </Box>
+    }>
+      <SearchPage />
+    </Suspense>
   );
 }
