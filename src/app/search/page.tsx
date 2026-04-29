@@ -246,7 +246,11 @@ export default function SearchPage() {
                           fontWeight: "bold",
                         }}
                       >
-                        {horse.gender}{horse.age ? `${horse.age}歳` : ""}
+                        {/* 牝馬の場合だけ色を変える */}
+                        <span style={{ color: horse.gender === "牝" ? "#d32f2f" : "inherit" }}>
+                          {horse.gender}
+                          {horse.age ? `${horse.age}歳` : ""}
+                        </span>
                       </Typography>
                     )}
 
