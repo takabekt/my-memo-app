@@ -23,12 +23,20 @@ type Memo = {
   id: string;
   horseName: string;
 };
+
+type HorseInfo = {
+  name: string;
+  gender?: string;
+  age?: string;
+  nextRaceName?: string;
+};
+
 // 検索画面
 export default function SearchPage() {
   // 検索ボックスに入力された文字列を管理
   const [searchQuery, setSearchQuery] = useState("");
-  //  Firebaseから取得した馬名の一覧を管理
-  const [horseNames, setHorseNames] = useState<string[]>([]);
+  // Firebaseから取得した馬情報の一覧を管理
+  const [horses, setHorses] = useState<HorseInfo[]>([]);
   const router = useRouter();
   // チェックボックスの選択状態を管理
   const [selectedNames, setSelectedNames] = useState<string[]>([]);
@@ -49,38 +57,61 @@ export default function SearchPage() {
   };
   useEffect(() => {
     // Firebaseから馬名を取得
-    const fetchHorseNames = async () => {
+    const fetchHorseData = async () => {
       const user = auth.currentUser;
       if (!user) return;
-      // ログイン中ユーザーの「raceReviews」コレクションからメモを取得
-      const ref = collection(db, "users", user.uid, "raceReviews");
-      const snapshot = await getDocs(ref);
-      const memos: Memo[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Memo, "id">),
-      }));
-      // 馬名だけを抽出して重複を除外
-      const names = Array.from(new Set(memos.map((memo) => memo.horseName)));
-      setHorseNames(names);
+      // raceReviews から馬名の一覧を取得（重複排除）
+      const reviewRef = collection(db, "users", user.uid, "raceReviews");
+      const reviewSnap = await getDocs(reviewRef);
+      const uniqueNames = Array.from(new Set(reviewSnap.docs.map(doc => doc.data().horseName as string)));
+
+      // nextNotesから全ての馬の詳細データを取得
+      const nextNoteRef = collection(db, "users", user.uid, "nextNotes");
+      const nextNoteSnap = await getDocs(nextNoteRef);
+
+      // nextNotesのデータをMap形式にして取り出しやすくする
+      const nextNoteMap = new Map();
+      nextNoteSnap.docs.forEach(doc => {
+        nextNoteMap.set(doc.id, doc.data());
+      });
+
+      // 3. 馬名リストに詳細データを合体させる
+      const combinedData: HorseInfo[] = uniqueNames.map(name => {
+        const detail = nextNoteMap.get(name) || {};
+        return {
+          name: name,
+          gender: detail.gender || "",
+          age: detail.age || "",
+          nextRaceName: detail.nextRaceName || "",
+        };
+      });
+
+      setHorses(combinedData);
     };
-    fetchHorseNames();
+    fetchHorseData();
   }, []);
+
   // 検索フィルター処理
-  // 馬名順で取得
-  const filteredNames = horseNames
-    .filter((name): name is string => typeof name === "string")
-    .filter((name) => name.toLowerCase().includes(searchQuery.toLowerCase()))
-    .sort((a, b) => a.localeCompare(b));
+  const filteredHorses = horses
+    .filter((horse) => {
+      const query = searchQuery.toLowerCase();
+      // 「馬名」に含まれるか、もしくは「レース名」に含まれるか
+      return (
+        horse.name.toLowerCase().includes(query) ||
+        (horse.nextRaceName && horse.nextRaceName.toLowerCase().includes(query))
+      );
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     // 画面全体のコンテナ　中央寄せで、幅を600pxに設定
     <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
       {/* 検索ボックス */}
       <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
-        馬名で検索
+        馬名 or レース名で検索
       </Typography>
       <TextField
-        label="馬名を入力"
+        label="馬名 or レース名を入力"
         variant="outlined" // 外枠を設定
         fullWidth // 親の幅に合わせて横幅を設定
         value={searchQuery}
@@ -101,7 +132,7 @@ export default function SearchPage() {
       />
       {/* 検索結果 */}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        {filteredNames.length} 件の結果
+        {filteredHorses.length} 件の結果
       </Typography>
       <Box
         sx={{
@@ -156,19 +187,19 @@ export default function SearchPage() {
       >
         {/* 馬名リスト */}
         <List>
-          {filteredNames.map((name) => (
-            <ListItem key={name} disablePadding divider sx={{ py: 0 }}>
+          {filteredHorses.map((horse) => (
+            <ListItem key={horse.name} disablePadding divider sx={{ py: 0 }}>
               <ListItemButton dense sx={{ py: 0 }}>
                 <Checkbox
                   edge="start"
-                  checked={selectedNames.includes(name)}
+                  checked={selectedNames.includes(horse.name)}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleToggle(name);
+                    handleToggle(horse.name);
                   }}
                   disabled={
                     // 最大18頭選択
-                    selectedNames.length >= 18 && !selectedNames.includes(name)
+                    selectedNames.length >= 18 && !selectedNames.includes(horse.name)
                   }
                   sx={{
                     "& svg": {
@@ -176,27 +207,61 @@ export default function SearchPage() {
                     },
                   }}
                 />
-                <Box sx={{ ml: 4, flexGrow: 1 }}>
-                  <ListItemText
-                    primary={
-                      <span
-                        onClick={() =>
-                          router.push(`/horse/${encodeURIComponent(name)}?from=/search`)
-                        }
-                        style={{ cursor: "pointer", fontSize: "1.2rem" }}
-                      >
-                        {name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
-                          part.toLowerCase() === searchQuery.toLowerCase() ? (
-                            <span key={i} style={{ color: "#1976d2", fontWeight: "bold" }}>
-                              {part}
-                            </span>
-                          ) : (
-                            part
-                          )
-                        )}
-                      </span>
+                <Box sx={{ ml: 4, flexGrow: 1, py: 1 }}>
+                  {/* 1. 馬名部分（これまでの ListItemText の中身を Typography に変更） */}
+                  <Typography
+                    onClick={() =>
+                      router.push(`/horse/${encodeURIComponent(horse.name)}?from=/search`)
                     }
-                  />
+                    sx={{
+                      cursor: "pointer",
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                      display: "block",
+                      lineHeight: 1.2
+                    }}
+                  >
+                    {horse.name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
+                      part.toLowerCase() === searchQuery.toLowerCase() ? (
+                        <span key={i} style={{ color: "#1976d2" }}>
+                          {part}
+                        </span>
+                      ) : (
+                        part
+                      )
+                    )}
+                  </Typography>
+
+                  {/* 2. 追加する詳細情報行 */}
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 0.5 }}>
+                    {(horse.gender || horse.age) && (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          bgcolor: "#f0f2f5",
+                          px: 0.8,
+                          py: 0.2,
+                          borderRadius: 1,
+                          color: "text.secondary",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {horse.gender}{horse.age ? `${horse.age}歳` : ""}
+                      </Typography>
+                    )}
+
+                    {horse.nextRaceName && (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "#e65100",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        🚩 {horse.nextRaceName}
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
               </ListItemButton>
             </ListItem>
@@ -215,7 +280,7 @@ export default function SearchPage() {
           </Typography>
         </Box>
       )}
-      {filteredNames.length === 0 && (
+      {filteredHorses.length === 0 && (
         <Box sx={{ textAlign: "center", mt: 4 }}>
           <Typography variant="body1" color="text.secondary">
             該当する馬が見つかりません。
