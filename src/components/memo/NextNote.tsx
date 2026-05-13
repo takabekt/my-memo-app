@@ -23,6 +23,7 @@ type Props = {
  */
 
 export default function NextNoteBlock({ userId, horseName, editable }: Props) {
+  const [originalData, setOriginalData] = useState<any>(null);
   const [note, setNote] = useState("");
   const [nextRaceName, setNextRaceName] = useState(""); // 次走レース
   const [nextHorseNumber, setNextHorseNumber] = useState(""); // 次走レース馬番
@@ -37,6 +38,7 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
       const snap = await getDoc(ref);
       if (snap.exists()) {
         const data = snap.data();
+        setOriginalData(data);
         setNote(data.note || "");
         setNextRaceName(data.nextRaceName || "");
         setNextHorseNumber(data.nextHorseNumber || "");
@@ -47,20 +49,50 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
     };
     fetchNote();
   }, [userId, horseName]);
+  // キャンセル処理
+  const handleCancel = () => {
+    if (originalData) {
+      // 編集前の状態（originalData）に全て戻す
+      setNote(originalData.note || "");
+      setNextRaceName(originalData.nextRaceName || "");
+      setNextHorseNumber(originalData.nextHorseNumber || "");
+      setGender(originalData.gender || "");
+      setAge(originalData.age || "");
+    } else {
+      // データがまだ無い場合は空に戻す
+      setNote("");
+      setNextRaceName("");
+      setNextHorseNumber("");
+      setGender("");
+      setAge("");
+    }
+    setEditing(false);
+  };
+  // 保存処理
   const handleSave = async () => {
     const ref = doc(db, "users", userId, "nextNotes", horseName);
+    
+    // 画面上の入力値用変数を作成（バックアップ用）
+    const dataForState = {
+      note,
+      nextRaceName,
+      nextHorseNumber,
+      gender,
+      age,
+    };
+
+    // Firestoreには「時刻」を足して保存
     await setDoc(
       ref,
       {
-        note,
-        nextRaceName,
-        nextHorseNumber,
-        gender,
-        age,
+        ...dataForState,
         updatedAt: serverTimestamp(),
       },
       { merge: true }
     );
+    
+    // バックアップを最新にする（時刻は含めない）
+    setOriginalData(dataForState);
     setEditing(false);
   };
   if (loading) return <Typography color="text.secondary">読み込み中...</Typography>;
@@ -142,7 +174,7 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
             onChange={(e) => setNote(e.target.value)}
           />
           <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
-            <Button onClick={() => setEditing(false)} color="error" size="small">
+            <Button onClick={handleCancel} color="error" size="small">
               キャンセル
             </Button>
             <Button onClick={handleSave} variant="contained" size="small">
