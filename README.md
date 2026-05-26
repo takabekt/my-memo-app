@@ -155,10 +155,8 @@ my-memo-app/
 │   │   ├── horse/          # 指定した馬のメモ一覧
 │   │   └── review/         # 全頭回顧ビュー
 │   ├── components/         # UIコンポーネント
-│   ├── auth/               # 認証関連の処理
-│   ├── form/               # フォーム関連
-│   ├── memo/               # メモ表示関連
 │   ├── hooks/              # カスタムフック
+│   ├── types/              # TypeScriptの型定義ファイル
 │   ├── utils/              # スタイルや共通関数
 │   └── firebase.js         # Firebase初期化
 ├── .env.local              # 開発環境だけで使う、アプリの設定情報をまとめたファイル
