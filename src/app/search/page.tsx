@@ -123,6 +123,7 @@ function SearchPage() {
           router.replace(`/search?q=${encodeURIComponent(val)}`, { scroll: false });
         }}
         sx={{ mb: 3 }}
+        // 入力された場合は、×ボタンを表示
         InputProps={{
           endAdornment: searchQuery && (
             <IconButton
@@ -221,7 +222,7 @@ function SearchPage() {
                     onClick={() => {
                       // 現在の検索ワード付きのURLを作る
                       const currentPathWithQuery = `/search?q=${encodeURIComponent(searchQuery)}`;
-                      // fromに詰めて詳細画面へ飛ばす
+                      // 馬名と現在の検索ワードが含まれたURLをもとにメモ一覧画面に遷移する
                       router.push(
                         `/horse/${encodeURIComponent(horse.name)}?from=${encodeURIComponent(currentPathWithQuery)}`
                       );
