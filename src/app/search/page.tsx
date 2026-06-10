@@ -11,18 +11,12 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemText,
   IconButton,
   Button,
 } from "@mui/material";
 import Link from "next/link";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Checkbox } from "@mui/material";
-
-type Memo = {
-  id: string;
-  horseName: string;
-};
 
 type HorseInfo = {
   name: string;
@@ -63,12 +57,12 @@ function SearchPage() {
     const fetchHorseData = async () => {
       const user = auth.currentUser;
       if (!user) return;
-      // raceReviews から馬名の一覧を取得（重複排除）
+      // FirebaseのraceReviews から馬名の一覧を取得（重複排除）
       const reviewRef = collection(db, "users", user.uid, "raceReviews");
       const reviewSnap = await getDocs(reviewRef);
       const uniqueNames = Array.from(new Set(reviewSnap.docs.map(doc => doc.data().horseName as string)));
 
-      // nextNotesから全ての馬の詳細データを取得
+      // FirebaseのnextNotesから全ての馬の詳細データを取得
       const nextNoteRef = collection(db, "users", user.uid, "nextNotes");
       const nextNoteSnap = await getDocs(nextNoteRef);
 
@@ -77,8 +71,7 @@ function SearchPage() {
       nextNoteSnap.docs.forEach(doc => {
         nextNoteMap.set(doc.id, doc.data());
       });
-
-      // 3. 馬名リストに詳細データを合体させる
+      // 馬名リストと詳細データを合わせる
       const combinedData: HorseInfo[] = uniqueNames.map(name => {
         const detail = nextNoteMap.get(name) || {};
         return {
@@ -88,7 +81,6 @@ function SearchPage() {
           nextRaceName: detail.nextRaceName || "",
         };
       });
-
       setHorses(combinedData);
     };
     fetchHorseData();
@@ -98,7 +90,7 @@ function SearchPage() {
   const filteredHorses = horses
     .filter((horse) => {
       const query = searchQuery.toLowerCase();
-      // 「馬名」に含まれるか、もしくは「レース名」に含まれるか
+      // 「馬名」もしくは「レース名」に含まれるか
       return (
         horse.name.toLowerCase().includes(query) ||
         (horse.nextRaceName && horse.nextRaceName.toLowerCase().includes(query))
@@ -114,7 +106,6 @@ function SearchPage() {
   };
 
   return (
-    // 画面全体のコンテナ　中央寄せで、幅を600pxに設定
     <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
       {/* 検索ボックス */}
       <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
@@ -175,7 +166,7 @@ function SearchPage() {
             color="success"
             disabled={selectedNames.length === 0}
             onClick={() => {
-              // 現在の検索ワード付きの自画住所を作る（例: /search?q=リバティ）
+              // 現在の検索ワード付きのURLを作る（例: /search?q=リバティ）
               const backUrl = `/search?q=${encodeURIComponent(searchQuery)}`;
               // 選んだ馬のリストを作る
               const horseList = selectedNames.map(encodeURIComponent).join(",");
@@ -268,7 +259,7 @@ function SearchPage() {
                           fontWeight: "bold",
                         }}
                       >
-                        {/* 牝馬の場合だけ色を変える */}
+                        {/* 牝馬の場合だけ赤色 */}
                         <span style={{ color: horse.gender === "牝" ? "#d32f2f" : "inherit" }}>
                           {horse.gender}
                           {horse.age ? `${horse.age}歳` : ""}
@@ -320,6 +311,7 @@ function SearchPage() {
   );
 }
 
+// 読み込み中状態を表示
 export default function SearchPageWrapper() {
   return (
     <Suspense fallback={
