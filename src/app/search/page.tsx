@@ -166,7 +166,7 @@ function SearchPage() {
             color="success"
             disabled={selectedNames.length === 0}
             onClick={() => {
-              // 現在の検索ワード付きのURLを作る（例: /search?q=リバティ）
+              // 戻ってきた際に同じ検索条件で検索するために、現在の検索ワード付きのURLを作る
               const backUrl = `/search?q=${encodeURIComponent(searchQuery)}`;
               // 選んだ馬のリストを作る
               const horseList = selectedNames.map(encodeURIComponent).join(",");
@@ -184,7 +184,7 @@ function SearchPage() {
           </Link>
         </Box>
       </Box>
-      {/* スクロールで全件確認可能 */}
+      {/* スクロール */}
       <Box
         sx={{
           maxHeight: "40vh",
@@ -219,7 +219,7 @@ function SearchPage() {
                   {/* 馬名部分 */}
                   <Typography
                     onClick={() => {
-                      // 現在の検索ワード付きの自画住所を作る（例: /search?q=リバティ）
+                      // 現在の検索ワード付きのURLを作る
                       const currentPathWithQuery = `/search?q=${encodeURIComponent(searchQuery)}`;
                       // fromに詰めて詳細画面へ飛ばす
                       router.push(
