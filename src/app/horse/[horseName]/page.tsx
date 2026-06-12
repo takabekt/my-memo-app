@@ -4,7 +4,11 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Box, Button, Typography } from "@mui/material";
 import MemoList from "@/components/memo/MemoList";
 
-// レース回顧一覧画面
+/**
+ * レース回顧一覧画面
+ * 対象の馬のレース回顧を日付が新しい順で表示
+ * * @component
+ */
 export default function HorseMemoPage() {
   // URLの馬名を取得
   const { horseName } = useParams();
