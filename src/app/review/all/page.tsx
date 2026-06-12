@@ -34,7 +34,7 @@ function ReviewAllPage() {
       </Typography>
       {/* 🔄 Suspense(読み込み中の状態を表示)でラップ */}
       <Suspense fallback={<Typography align="center">読み込み中...</Typography>}>
-        {/* 選択した馬メモ一覧 */}
+        {/* 選択した馬レース回顧一覧 */}
         <ReviewAllContent />
       </Suspense>
     </Box>

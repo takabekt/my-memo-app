@@ -2,8 +2,9 @@
 
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Box, Button, Typography } from "@mui/material";
-import MemoList from "@/app/mypage/MemoList";
+import MemoList from "@/components/memo/MemoList";
 
+// レース回顧一覧画面
 export default function HorseMemoPage() {
   // URLの馬名を取得
   const { horseName } = useParams();
@@ -25,7 +26,7 @@ export default function HorseMemoPage() {
           textAlign: "center",
         }}
       >
-        {decodedHorseName}のメモ一覧
+        {decodedHorseName}のレース回顧一覧
       </Typography>
       <Box
         sx={{
@@ -36,8 +37,14 @@ export default function HorseMemoPage() {
         }}
       >
         {/*戻るボタン */}
-        {/*遷移元に戻る */}
-        <Button variant="outlined" onClick={() => router.push(from || "/search")}>
+        <Button 
+          variant="outlined" 
+          onClick={() => 
+            router.push(
+              from || "/search" // 遷移元に戻る。遷移元がなければ検索画面に遷移
+            )
+          }
+        >
           戻る
         </Button>
         {/*新規登録ボタン */}
@@ -53,7 +60,7 @@ export default function HorseMemoPage() {
           新規登録
         </Button>
       </Box>
-      {/*メモ一覧 */}
+      {/*レース回顧一覧 */}
       <MemoList
         filterHorseName={decodedHorseName}
         showActions={true} // メモの編集・削除ボタンを表示

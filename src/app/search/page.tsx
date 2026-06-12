@@ -25,7 +25,12 @@ type HorseInfo = {
   nextRaceName?: string;
 };
 
-// 検索画面
+/**
+ * 馬名または次走レース名でフィルターできる検索画面
+ * チェックボックスで最大18頭まで馬を選択し、一括で全頭回顧ビュー画面へ遷移させることが可能
+ * レース回顧一覧画面から戻った際に入力状態を復元できるよう、検索ワードをURLパラメータ(?q=)に同期します。
+ * * @component
+ */
 function SearchPage() {
   // 検索ボックスに入力された文字列を管理
   const searchParams = useSearchParams();
@@ -222,7 +227,7 @@ function SearchPage() {
                     onClick={() => {
                       // 現在の検索ワード付きのURLを作る
                       const currentPathWithQuery = `/search?q=${encodeURIComponent(searchQuery)}`;
-                      // 馬名と現在の検索ワードが含まれたURLをもとにメモ一覧画面に遷移する
+                      // 馬名と現在の検索ワードが含まれたURLをもとにレース回顧一覧画面に遷移する
                       router.push(
                         `/horse/${encodeURIComponent(horse.name)}?from=${encodeURIComponent(currentPathWithQuery)}`
                       );
@@ -312,7 +317,15 @@ function SearchPage() {
   );
 }
 
-// 読み込み中状態を表示
+/**
+ * 検索画面全体を「読み込み中...」の表示で包み込むための外枠（ラッパー）
+ * Next.jsのルールで、URLのパラメータ（?q=リバティ など）を読み込む処理が入る画面は、
+ * ページの準備ができる前に動かすとエラー（文字化けや表示バグ）を起こす可能性があり、
+ * このラッパーで画面全体を`<Suspense>`という機能で包み込み、
+ * 「データの読み込みが終わるまでは『読み込み中...』の文字を出して安全に待機させる」
+ * というバグ対策を行っている
+ * * @component
+ */
 export default function SearchPageWrapper() {
   return (
     <Suspense fallback={

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Box, Typography, Paper } from "@mui/material";
-import MemoList from "@/app/mypage/MemoList";
+import MemoList from "@/components/memo/MemoList";
 import { useEffect, useState, useMemo } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -91,7 +91,7 @@ export default function ReviewAllContent() {
           <Typography
             variant="h6"
             component={Link}
-            // 馬名をクリックすると、その馬のメモ一覧画面に遷移
+            // 馬名をクリックすると、その馬のレース回顧一覧画面に遷移
             href={`/horse/${encodeURIComponent(horse.name)}?from=${encodeURIComponent(`/review/all?${queryString}`)}`}
             sx={{
               fontWeight: "bold",
@@ -106,7 +106,7 @@ export default function ReviewAllContent() {
           >
             {horse.name}
           </Typography>
-          {/*メモ一覧 */}
+          {/*レース回顧一覧 */}
           <MemoList
             filterHorseName={horse.name}
             showActions={false} // メモの編集・削除ボタンを非表示

@@ -9,7 +9,7 @@ import { fieldSx, dateFieldSx } from "@/utils/fieldSx";
 import { useSnackbar } from "notistack";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import NextNoteBlock from "@/components/memo/NextNote";
-// 対象の馬のメモ一覧コンポーネント
+
 // 型定義
 type Memo = {
   id: string;
@@ -47,12 +47,21 @@ const getPaceBadge = (pace: string) => {
   }
 };
 
+/**
+ * 対象の馬のレース回顧メモを一覧表示するコンポーネント。
+ * Firestoreからデータを自動取得し、日付の新しい順（降順）にソートして表示
+ * * @component
+ * @param {Object} props - コンポーネントのProps
+ * @param {string} props.filterHorseName - 特定の馬名
+ * @param {boolean} [props.showActions=true] - 編集・削除ボタンを表示するかどうか
+ * @param {boolean} [props.editableNextNote=false] - 次走メモを編集可能にするかどうか
+ */
 export default function MemoList({
   filterHorseName,
   showActions = true,
   editableNextNote = false,
 }: {
-  filterHorseName?: string;
+  filterHorseName: string;
   showActions?: boolean;
   editableNextNote?: boolean;
 }) {
@@ -65,7 +74,7 @@ export default function MemoList({
   // どのメモを削除しようとしているかを一時的に保存する
   const [targetId, setTargetId] = useState<string | null>(null);
 
-  // Firestoreからメモ一覧を取得
+  // Firestoreからレース回顧一覧を取得
   useEffect(() => {
     const fetchData = async () => {
       const user = auth.currentUser;
@@ -154,8 +163,8 @@ export default function MemoList({
         mt: 4,
       }}
     >
-      {/*次走メモ*/}
-      {/* 実際に取得できたメモ（memos[0]）から馬名を取るようにする */}
+      {/*馬情報と次走メモ*/}
+      {/* 実際に取得できたメモから馬名を取得 */}
       {user && (filterHorseName || memos[0]?.horseName) && (
         <NextNoteBlock 
           userId={user.uid} 
@@ -267,8 +276,8 @@ export default function MemoList({
                 <Box
                   component="span"
                   sx={{
-                    color: getPaceBadge(memo.racePace).color, // 定義済みの色を使用
-                    bgcolor: getPaceBadge(memo.racePace).bg,   // 定義済みの背景色を使用
+                    color: getPaceBadge(memo.racePace).color, 
+                    bgcolor: getPaceBadge(memo.racePace).bg, 
                     px: 1,
                     py: 0.1,
                     borderRadius: 1,

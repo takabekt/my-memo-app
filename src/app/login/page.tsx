@@ -6,8 +6,11 @@ import { auth, provider } from "@/firebase";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 
-// Googleログイン画面
-// 「/login」 にアクセスしたときに表示される画面
+/**
+ * アプリの入り口となる、Googleアカウント専用のログイン画面
+ * Firebase Authentication（認証機能）を利用して、Googleのログイン画面をポップアップ形式で立ち上げる
+ * * @component
+ */
 export default function LoginPage() {
   const router = useRouter();
   const handleLogin = async () => {
