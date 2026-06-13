@@ -11,12 +11,20 @@ import { useSnackbar } from "notistack";
 import { useState, useMemo } from "react";
 import { RaceReview } from "@/types/race";
 
-function NewMemoContent() {
+/**
+ * 新規レース回顧メモの入力・保存を制御する画面
+ * フォームから送信されたデータをFirestoreに非同期で新規追加します。
+ * 保存中は二重送信を防止するロックがかかり、完了後はトースト通知を表示して元の画面（または検索画面）に遷移します。
+ * * @component
+ */
+function NewMemoPage() {
   const router = useRouter();
+  // URLのパラメータ読み取り
   const searchParams = useSearchParams();
+  // トースト通知のポップアップ
   const { enqueueSnackbar } = useSnackbar();
+  // 保存中状態管理(2重押下防止)
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   // URLから horseName を取得（なければ空文字）
   const queryHorseName = searchParams.get("horseName") || "";
 
@@ -28,14 +36,14 @@ function NewMemoContent() {
     setIsSubmitting(true); 
 
     try {
-      // Firebaseに保存（新規追加）
+      // firestoreに保存（新規追加）
       await addDoc(collection(db, "users", user.uid, "raceReviews"), {
         ...data,
         createdAt: serverTimestamp(),
       });
       // トースト通知
       enqueueSnackbar("メモを登録しました！", { variant: "success" }); 
-      // 戻り先URLがあればそこへ、なければ/searchへ
+      // 戻り先URLがあればそこへ、なければ検索画面へ遷移
       const from = searchParams.get("from") || "/search";
       router.push(from);
     } catch (error) {
@@ -84,9 +92,9 @@ function NewMemoContent() {
         新規レース回顧
       </Typography>
 
-      {/* フォームを呼び出し、保存命令(onSubmit)を渡す */}
+      {/* 新規登録フォーマット */}
       <RaceReviewForm 
-        title="" // Typographyで出してるので空でOK
+        title="" 
         submitLabel="登録する"
         initialData={initialData}
         onSubmit={handleSave} 
@@ -98,11 +106,19 @@ function NewMemoContent() {
   );
 }
 
-export default function NewMemoPage() {
+/**
+ * 新規登録全体を「読み込み中...」の表示で包み込むための外枠（ラッパー）
+ * Next.jsのルールで、URLのパラメータ（?q=リバティ など）を読み込む処理が入る画面は、
+ * ページの準備ができる前に動かすとエラー（文字化けや表示バグ）を起こす可能性があり、
+ * このラッパーで画面全体を`<Suspense>`という機能で包み込み、
+ * 「データの読み込みが終わるまでは『読み込み中...』の文字を出して安全に待機させる」
+ * というバグ対策を行っている
+ * * @component
+ */
+export default function NewMemoPageWrapper() {
   return (
-    // 「URLを読み取れるようになるまで、これを出しといて」と指定する
     <Suspense fallback={<div>読み込み中...</div>}>
-      <NewMemoContent />
+      <NewMemoPage />
     </Suspense>
   );
 }

@@ -15,14 +15,22 @@ type HorseInfo = {
   nextHorseNumber: string;
 };
 
-// 選択した馬のメモコンポーネント
+/**
+ * 選択した馬のレース回顧メモコンポーネント
+ * 横並びで表示
+ *
+ * * @component
+ */
 export default function ReviewAllContent() {
   // クエリパラメータから馬名を取得
   const searchParams = useSearchParams();
   const horseQuery = searchParams.get("horses");
   const horseNames = horseQuery ? horseQuery.split(",").map(decodeURIComponent) : [];
+  //　URLパラメータを取得
   const queryString = searchParams.toString();
+  // 馬ごとの情報を管理
   const [horseDataList, setHorseDataList] = useState<HorseInfo[]>([]);
+  // ログインユーザーを管理
   const { user } = useAuth();
   // 馬が選ばれていない時の表示
   if (horseNames.length === 0) {
@@ -63,6 +71,14 @@ export default function ReviewAllContent() {
       return a.name.localeCompare(b.name, "ja");
     });
   }, [horseDataList]);
+  // 既存データが取得できるまでは、読み込み中の表示
+  if (horseNames.length > 0 && horseDataList.length === 0) {
+    return (
+      <Typography color="text.secondary" align="center">
+        データを読み込み中...
+      </Typography>
+    );
+  }
   
   // 横スクロールで馬ごとのメモを表示
   return (

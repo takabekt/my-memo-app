@@ -36,7 +36,7 @@ function SearchPage() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const [searchQuery, setSearchQuery] = useState(initialQuery);
-  // Firebaseから取得した馬情報の一覧を管理
+  // firestoreから取得した馬情報の一覧を管理
   const [horses, setHorses] = useState<HorseInfo[]>([]);
   const router = useRouter();
 
@@ -58,16 +58,16 @@ function SearchPage() {
     setSelectedNames([]);
   };
   useEffect(() => {
-    // Firebaseから馬名を取得
+    // firestoreから馬名を取得
     const fetchHorseData = async () => {
       const user = auth.currentUser;
       if (!user) return;
-      // FirebaseのraceReviews から馬名の一覧を取得（重複排除）
+      // firestoreのraceReviews から馬名の一覧を取得（重複排除）
       const reviewRef = collection(db, "users", user.uid, "raceReviews");
       const reviewSnap = await getDocs(reviewRef);
       const uniqueNames = Array.from(new Set(reviewSnap.docs.map(doc => doc.data().horseName as string)));
 
-      // FirebaseのnextNotesから全ての馬の詳細データを取得
+      // firestoreのnextNotesから全ての馬の詳細データを取得
       const nextNoteRef = collection(db, "users", user.uid, "nextNotes");
       const nextNoteSnap = await getDocs(nextNoteRef);
 
