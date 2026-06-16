@@ -2,13 +2,14 @@
 
 import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 
+// MUIのデフォルトのデザイン設定を生成
 const theme = createTheme();
+
 /**
  * アプリ全体に MUI のテーマとスタイルを適用するためのプロバイダーコンポーネント。
- *
- * `ThemeProvider` でカスタムテーマを適用
- * `CssBaseline` でブラウザのデフォルトスタイルをリセット
- * `children` に渡された要素すべてにテーマが反映される
+ * * @component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - MUIのテーマを適用する配下のページやコンポーネント
  */
 export default function MuiProvider({ children }: { children: React.ReactNode }) {
   return (

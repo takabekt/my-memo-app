@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { Providers } from "./providers";
 // metadata(ページの情報をブラウザや検索エンジンに伝えるための設定)の定義
 export const metadata: Metadata = {

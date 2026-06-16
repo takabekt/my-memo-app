@@ -5,31 +5,37 @@ import { Box, Typography, TextField, Button, FormControl, InputLabel, Select, Me
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase";
 
+// 型定義
 type Props = {
   userId: string;
   horseName: string;
   editable: boolean; // true: 編集可, false: 表示のみ
 };
-/**
- * 次走メモ情報表示・編集コンポーネント
- *
- * Props:
- * - userId: Firebase Authentication の UID（ユーザーごとのメモを管理）
- * - horseName: 対象の競走馬の名前（ドキュメントIDとして使用）
- * - editable: true の場合は編集可能、false の場合は表示のみ
- *
- * Firestore の構造:
- * users/{userId}/nextNotes/{horseName} にメモを保存・取得
- */
 
+/**
+ * 次走メモ情報表示・編集するコンポーネント
+ * * @component
+ * @param {Object} props - コンポーネントのProps
+ * @param {string} [props.userId] - Firebase Authentication の UID
+ * @param {string} [props.horseName] - 対象の馬名
+ * @param {boolean} [props.editable=true] - true の場合は編集可能、false の場合は表示のみ
+ */
 export default function NextNoteBlock({ userId, horseName, editable }: Props) {
+  // 保存されているデータのバックアップ
   const [originalData, setOriginalData] = useState<any>(null);
+  // メモ本文
   const [note, setNote] = useState("");
-  const [nextRaceName, setNextRaceName] = useState(""); // 次走レース
-  const [nextHorseNumber, setNextHorseNumber] = useState(""); // 次走レース馬番
-  const [gender, setGender] = useState(""); // 性別
-  const [age, setAge] = useState("");       // 年齢
+  // 次走レース
+  const [nextRaceName, setNextRaceName] = useState("");
+   // 次走レース馬番
+  const [nextHorseNumber, setNextHorseNumber] = useState("");
+  // 性別
+  const [gender, setGender] = useState(""); 
+  // 年齢
+  const [age, setAge] = useState("");
+  // 編集モードであるかを管理
   const [editing, setEditing] = useState(false);
+  // データ読み込み中であるかを管理
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +44,9 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
       const snap = await getDoc(ref);
       if (snap.exists()) {
         const data = snap.data();
+        // データをバックアップとして保存
         setOriginalData(data);
+        // 各入力欄のStateにデータをセット（データがなければ空文字）
         setNote(data.note || "");
         setNextRaceName(data.nextRaceName || "");
         setNextHorseNumber(data.nextHorseNumber || "");
@@ -48,7 +56,7 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
       setLoading(false);
     };
     fetchNote();
-  }, [userId, horseName]);
+  }, [userId, horseName]);// userId,horseNameが変わったら再取得
   // キャンセル処理
   const handleCancel = () => {
     if (originalData) {
@@ -146,7 +154,6 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
               onChange={(e) => setAge(e.target.value)}
             />
           </Box>
-
           <Typography variant="subtitle2" color="text.secondary">
             次走メモ（総括）
           </Typography>
@@ -183,7 +190,7 @@ export default function NextNoteBlock({ userId, horseName, editable }: Props) {
           </Box>
         </>
       ) : (
-        /* 表示モードの時（editable が false、または編集モードじゃない時） */
+        // 表示モードの時（editable が false、または編集モードじゃない時）
         <Box sx={{ mt: 1 }}>
           {/* 馬情報を表示 */}
           {(gender || age) && (
