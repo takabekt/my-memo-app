@@ -4,7 +4,9 @@ import React, { useState } from 'react';
 import { Box, TextField, MenuItem, Button, Typography, Stack } from '@mui/material';
 import { RaceReview, DISTANCE_DATA } from '@/types/race';
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
-
+/**
+ * RaceReviewFormコンポーネントに渡される型定義インターフェース
+ */
 interface RaceReviewFormProps {
   initialData: RaceReview;
   onSubmit: (data: RaceReview) => void;
@@ -15,6 +17,18 @@ interface RaceReviewFormProps {
   cancelMessage?: string;
 }
 
+/**
+ * 競馬のレース回顧を入力・編集するためのフォームコンポーネント
+ * * @component
+ * @param {Object} props - コンポーネントのProps
+ * @param {RaceReview} props.initialData - フォームの初期値となるレース回顧データ
+ * @param {function(RaceReview): void} props.onSubmit - フォームが正常に送信された際に実行されるコールバック関数
+ * @param {function(): void} props.onCancel - キャンセルボタンが押され、確認ダイアログで承認された際に実行されるコールバック関数
+ * @param {string} props.title - フォームの最上部に表示されるタイトル文
+ * @param {string} props.submitLabel - 送信ボタンに表示されるラベルテキスト
+ * @param {boolean} [props.isSubmitting=false] - true の場合は送信ボタンを非活性化し、二重送信を防止
+ * @param {string} [props.cancelMessage="入力を破棄して戻りますか？"] - キャンセル時の確認ダイアログに表示するメッセージ
+ */
 export default function RaceReviewForm({
   initialData,
   onSubmit,
@@ -24,18 +38,21 @@ export default function RaceReviewForm({
   isSubmitting = false,
   cancelMessage = "入力を破棄して戻りますか？"
 }: RaceReviewFormProps) {
-  
+  // ユーザーが入力した現在のフォーム全体の値を保持
   const [formData, setFormData] = useState<RaceReview>(initialData);
+  // 未入力の項目を管理
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   
   // フォーム内部でダイアログの開閉を管理
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // 競馬場と馬場の種類から選択可能な距離を設定
   const availableDistances =
     formData.raceCourse && formData.surface 
       ? (DISTANCE_DATA[formData.raceCourse]?.[formData.surface] ?? []) 
       : [];
 
+  // 入力値の変更ハンドラ
   const handleChange = (field: keyof RaceReview) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setFormData((prev) => {
@@ -46,7 +63,7 @@ export default function RaceReviewForm({
       return newData;
     });
   };
-
+  // 保存ボタン押下時に、必須入力チェックを行い、問題がなければ親コンポーネントの送信処理へデータを渡す
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const requiredFields: (keyof RaceReview)[] = [
@@ -69,14 +86,17 @@ export default function RaceReviewForm({
       'review'
     ];
     const newErrors: Record<string, boolean> = {};
+    // 一括で未入力チェック
     requiredFields.forEach(field => {
       newErrors[field] = !formData[field];
     });
     setErrors(newErrors);
+    // 一つでもエラーがあれば、処理を中断して警告
     if (Object.values(newErrors).includes(true)) {
       alert("未入力の項目があります");
       return;
     }
+    // 全てクリアしていれば、親から受け取ったonSubmitを実行
     onSubmit(formData);
   };
 
@@ -117,7 +137,7 @@ export default function RaceReviewForm({
               <TextField select sx={{ flex: '1 1 48%' }} label="方向" value={formData.courseDirection} onChange={handleChange('courseDirection')} error={errors.courseDirection}>
                 <MenuItem value="右回り">右回り</MenuItem>
                 <MenuItem value="左回り">左回り</MenuItem>
-                <MenuItem value="直線">直線</MenuItem> {/* 新潟1000直とかのために「直線」も一応！ */}
+                <MenuItem value="直線">直線</MenuItem>
               </TextField>
             </Box>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
@@ -160,7 +180,7 @@ export default function RaceReviewForm({
           </Stack>
         </Box>
 
-        {/*当日のコンディションと回顧*/}
+        {/*当日の詳細・回顧メモ*/}
         <Box>
           <Typography variant="subtitle2" color="primary" sx={{ mb: 2, fontWeight: 'bold' }}>
             ✍️ 当日の詳細・回顧メモ
@@ -184,7 +204,6 @@ export default function RaceReviewForm({
         </Box>
         {/* ボタン部分 */}
         <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-          {/* type="button" を指定してフォーム送信を防止 */}
           <Button 
             type="button" 
             variant="outlined" 
