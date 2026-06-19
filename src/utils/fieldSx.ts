@@ -1,6 +1,9 @@
-// フォームの見た目（文字サイズや高さなど）を統一するためのスタイル定義をまとめたファイル
-
-// テキスト入力やセレクトボックスに共通の見た目を適用するためのスタイル
+/**
+ * フォーム入力フィールド共通のスタイル定義（MUI sxプロパティ用）
+ * * 各画面のテキストフィールドやセレクトボックスのフォントサイズ・高さを統一し、
+ * スマートフォン（xs）からPC（sm）まで一貫したレスポンシブな操作性を実現
+ * * @type {Record<string, any>}
+ */
 export const fieldSx = {
   "& .MuiInputLabel-root": {
     fontSize: { xs: "0.9rem", sm: "1rem" }, // ラベルの文字サイズをレスポンシブに
@@ -15,7 +18,11 @@ export const fieldSx = {
   },
 };
 
-// 日付入力用のスタイル
+/**
+ * 日付入力フィールド（type="date"）専用のスタイル定義。
+ * * 各種ブラウザにおける日付選択コントロールのデフォルトの表示崩れを防ぎつつ、共通の文字サイズを適用
+ * * @type {Record<string, any>}
+ */
 export const dateFieldSx = {
   "& .MuiInputLabel-root": {
     fontSize: { xs: "0.9rem", sm: "1rem" },

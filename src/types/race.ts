@@ -1,4 +1,6 @@
-// 競馬のレース回顧データの型定義
+/**
+ * 競馬のレース回顧データの型定義
+ */
 export interface RaceReview {
   id?: string;             // FirestoreのドキュメントID（編集時に使用）
   horseName: string;       // 馬名
@@ -24,7 +26,13 @@ export interface RaceReview {
   review: string;          // 回顧（メモ）
 }
 
-// 競馬場ごとの距離データ
+/**
+ * 全中央競馬場（JRA 10場）ごとのコース・距離マスタデータ。
+ * * 登録・検索時の距離選択セレクトボックスの連動等に使用
+ * * @type {Record<string, Record<string, number[]>>}
+ * @property {Record<string, number[]>} [競馬場名] - 競馬場名をキーとしたトラック（芝/ダート）別のデータ
+ * @property {number[]} [トラック名] - 「芝」または「ダート」をキーとした、開催される距離（m）の昇順配列
+ */
 export const DISTANCE_DATA: Record<string, Record<string, number[]>> = {
   札幌: { 芝: [1200, 1500, 1800, 2000, 2600], ダート: [1000, 1700, 2400] },
   函館: { 芝: [1200, 1800, 2000, 2600], ダート: [1000, 1700, 2400] },
