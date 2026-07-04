@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Checkbox } from "@mui/material";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 type HorseInfo = {
   name: string;
@@ -111,209 +112,211 @@ function SearchPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
-      {/* 検索ボックス */}
-      <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
-        馬名 or レース名で検索
-      </Typography>
-      <TextField
-        label="馬名 or レース名を入力"
-        variant="outlined" // 外枠を設定
-        fullWidth // 親の幅に合わせて横幅を設定
-        value={searchQuery}
-        onChange={(e) => {
-          const val = e.target.value;
-          setSearchQuery(val);
-          // 検索ワードをURLに保存
-          router.replace(`/search?q=${encodeURIComponent(val)}`, { scroll: false });
-        }}
-        sx={{ mb: 3 }}
-        // 入力された場合は、×ボタンを表示
-        InputProps={{
-          endAdornment: searchQuery && (
-            <IconButton
-              onClick={clearSearch}
-              edge="end"
-              size="small"
-              aria-label="クリア"
-            >
-              <ClearIcon />
-            </IconButton>
-          ),
-        }}
-      />
-      {/* 検索結果 */}
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        {filteredHorses.length} 件の結果
-      </Typography>
-      <Box
-        sx={{
-          display: "flex", // ボタンを横並び
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 1,
-          mb: 2,
-        }}
-      >
-        {/* クリアボタン */}
-        <Button
-          onClick={clearSelection}
-          variant="contained"
-          color="primary"
-          disabled={selectedNames.length === 0}
+    <AuthGuard>
+      <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
+        {/* 検索ボックス */}
+        <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+          馬名 or レース名で検索
+        </Typography>
+        <TextField
+          label="馬名 or レース名を入力"
+          variant="outlined" // 外枠を設定
+          fullWidth // 親の幅に合わせて横幅を設定
+          value={searchQuery}
+          onChange={(e) => {
+            const val = e.target.value;
+            setSearchQuery(val);
+            // 検索ワードをURLに保存
+            router.replace(`/search?q=${encodeURIComponent(val)}`, { scroll: false });
+          }}
+          sx={{ mb: 3 }}
+          // 入力された場合は、×ボタンを表示
+          InputProps={{
+            endAdornment: searchQuery && (
+              <IconButton
+                onClick={clearSearch}
+                edge="end"
+                size="small"
+                aria-label="クリア"
+              >
+                <ClearIcon />
+              </IconButton>
+            ),
+          }}
+        />
+        {/* 検索結果 */}
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          {filteredHorses.length} 件の結果
+        </Typography>
+        <Box
+          sx={{
+            display: "flex", // ボタンを横並び
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 1,
+            mb: 2,
+          }}
         >
-          選択クリア
-        </Button>
-        <Box sx={{ display: "flex", gap: 1 }}>
-          {/* 全頭回顧ビューへボタン */}
+          {/* クリアボタン */}
           <Button
-            variant="contained" // 塗りつぶし
-            color="success"
+            onClick={clearSelection}
+            variant="contained"
+            color="primary"
             disabled={selectedNames.length === 0}
-            onClick={() => {
-              // 戻ってきた際に同じ検索条件で検索するために、現在の検索ワード付きのURLを作る
-              const backUrl = `/search?q=${encodeURIComponent(searchQuery)}`;
-              // 選んだ馬のリストを作る
-              const horseList = selectedNames.map(encodeURIComponent).join(",");
-              // 全体を組み立てる
-              router.push(`/review/all?horses=${horseList}&from=${encodeURIComponent(backUrl)}`);
-            }}
           >
-            全頭回顧ビューへ
+            選択クリア
           </Button>
-          {/* 新規登録ボタン */}
-          <Link href={`/mypage/new?from=/search`} passHref>
-            <Button variant="contained" color="primary">
-              新規登録
+          <Box sx={{ display: "flex", gap: 1 }}>
+            {/* 全頭回顧ビューへボタン */}
+            <Button
+              variant="contained" // 塗りつぶし
+              color="success"
+              disabled={selectedNames.length === 0}
+              onClick={() => {
+                // 戻ってきた際に同じ検索条件で検索するために、現在の検索ワード付きのURLを作る
+                const backUrl = `/search?q=${encodeURIComponent(searchQuery)}`;
+                // 選んだ馬のリストを作る
+                const horseList = selectedNames.map(encodeURIComponent).join(",");
+                // 全体を組み立てる
+                router.push(`/review/all?horses=${horseList}&from=${encodeURIComponent(backUrl)}`);
+              }}
+            >
+              全頭回顧ビューへ
             </Button>
-          </Link>
+            {/* 新規登録ボタン */}
+            <Link href={`/mypage/new?from=/search`} passHref>
+              <Button variant="contained" color="primary">
+                新規登録
+              </Button>
+            </Link>
+          </Box>
         </Box>
-      </Box>
-      {/* スクロール */}
-      <Box
-        sx={{
-          maxHeight: "40vh",
-          overflowY: "auto",
-          mb: 2,
-          border: "1px solid #ccc",
-        }}
-      >
-        {/* 馬名リスト */}
-        <List>
-          {filteredHorses.map((horse) => (
-            <ListItem key={horse.name} disablePadding divider sx={{ py: 0 }}>
-              <ListItemButton dense sx={{ py: 0 }}>
-                <Checkbox
-                  edge="start"
-                  checked={selectedNames.includes(horse.name)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggle(horse.name);
-                  }}
-                  disabled={
-                    // 最大18頭選択
-                    selectedNames.length >= 18 && !selectedNames.includes(horse.name)
-                  }
-                  sx={{
-                    "& svg": {
-                      fontSize: 40,
-                    },
-                  }}
-                />
-                <Box sx={{ ml: 4, flexGrow: 1, py: 1 }}>
-                  {/* 馬名部分 */}
-                  <Typography
-                    onClick={() => {
-                      // 現在の検索ワード付きのURLを作る
-                      const currentPathWithQuery = `/search?q=${encodeURIComponent(searchQuery)}`;
-                      // 馬名と現在の検索ワードが含まれたURLをもとにレース回顧一覧画面に遷移する
-                      router.push(
-                        `/horse/${encodeURIComponent(horse.name)}?from=${encodeURIComponent(currentPathWithQuery)}`
-                      );
+        {/* スクロール */}
+        <Box
+          sx={{
+            maxHeight: "40vh",
+            overflowY: "auto",
+            mb: 2,
+            border: "1px solid #ccc",
+          }}
+        >
+          {/* 馬名リスト */}
+          <List>
+            {filteredHorses.map((horse) => (
+              <ListItem key={horse.name} disablePadding divider sx={{ py: 0 }}>
+                <ListItemButton dense sx={{ py: 0 }}>
+                  <Checkbox
+                    edge="start"
+                    checked={selectedNames.includes(horse.name)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggle(horse.name);
                     }}
+                    disabled={
+                      // 最大18頭選択
+                      selectedNames.length >= 18 && !selectedNames.includes(horse.name)
+                    }
                     sx={{
-                      cursor: "pointer",
-                      fontSize: "1.2rem",
-                      fontWeight: "bold",
-                      display: "block",
-                      lineHeight: 1.2
+                      "& svg": {
+                        fontSize: 40,
+                      },
                     }}
-                  >
-                    {horse.name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
-                      part.toLowerCase() === searchQuery.toLowerCase() ? (
-                        <span key={i} style={{ color: "#1976d2" }}>
-                          {part}
-                        </span>
-                      ) : (
-                        part
-                      )
-                    )}
-                  </Typography>
+                  />
+                  <Box sx={{ ml: 4, flexGrow: 1, py: 1 }}>
+                    {/* 馬名部分 */}
+                    <Typography
+                      onClick={() => {
+                        // 現在の検索ワード付きのURLを作る
+                        const currentPathWithQuery = `/search?q=${encodeURIComponent(searchQuery)}`;
+                        // 馬名と現在の検索ワードが含まれたURLをもとにレース回顧一覧画面に遷移する
+                        router.push(
+                          `/horse/${encodeURIComponent(horse.name)}?from=${encodeURIComponent(currentPathWithQuery)}`
+                        );
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                        fontSize: "1.2rem",
+                        fontWeight: "bold",
+                        display: "block",
+                        lineHeight: 1.2
+                      }}
+                    >
+                      {horse.name.split(new RegExp(`(${searchQuery})`, "gi")).map((part, i) =>
+                        part.toLowerCase() === searchQuery.toLowerCase() ? (
+                          <span key={i} style={{ color: "#1976d2" }}>
+                            {part}
+                          </span>
+                        ) : (
+                          part
+                        )
+                      )}
+                    </Typography>
 
-                  {/* 詳細情報 */}
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 0.5 }}>
-                    {(horse.gender || horse.age) && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          bgcolor: "#f0f2f5",
-                          px: 0.8,
-                          py: 0.2,
-                          borderRadius: 1,
-                          color: "text.secondary",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {/* 牝馬の場合だけ赤色 */}
-                        <span style={{ color: horse.gender === "牝" ? "#d32f2f" : "inherit" }}>
-                          {horse.gender}
-                          {horse.age ? `${horse.age}歳` : ""}
-                        </span>
-                      </Typography>
-                    )}
+                    {/* 詳細情報 */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 0.5 }}>
+                      {(horse.gender || horse.age) && (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            bgcolor: "#f0f2f5",
+                            px: 0.8,
+                            py: 0.2,
+                            borderRadius: 1,
+                            color: "text.secondary",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {/* 牝馬の場合だけ赤色 */}
+                          <span style={{ color: horse.gender === "牝" ? "#d32f2f" : "inherit" }}>
+                            {horse.gender}
+                            {horse.age ? `${horse.age}歳` : ""}
+                          </span>
+                        </Typography>
+                      )}
 
-                    {horse.nextRaceName && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: "#e65100",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        🚩 {horse.nextRaceName}
-                      </Typography>
-                    )}
+                      {horse.nextRaceName && (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#e65100",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          🚩 {horse.nextRaceName}
+                        </Typography>
+                      )}
+                    </Box>
                   </Box>
-                </Box>
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+        {/* 選択済みの馬を表示 */}
+        {selectedNames.length > 0 && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              選択中の馬（{selectedNames.length}頭）:{" "}
+              {selectedNames
+                .slice()
+                .sort((a, b) => a.localeCompare(b)) // 名前順にソート
+                .join(", ")}
+            </Typography>
+          </Box>
+        )}
+        {filteredHorses.length === 0 && (
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="body1" color="text.secondary">
+              該当する馬が見つかりません。
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              入力を確認するか、新規登録してみましょう。
+            </Typography>
+          </Box>
+        )}
       </Box>
-      {/* 選択済みの馬を表示 */}
-      {selectedNames.length > 0 && (
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            選択中の馬（{selectedNames.length}頭）:{" "}
-            {selectedNames
-              .slice()
-              .sort((a, b) => a.localeCompare(b)) // 名前順にソート
-              .join(", ")}
-          </Typography>
-        </Box>
-      )}
-      {filteredHorses.length === 0 && (
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Typography variant="body1" color="text.secondary">
-            該当する馬が見つかりません。
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            入力を確認するか、新規登録してみましょう。
-          </Typography>
-        </Box>
-      )}
-    </Box>
+    </AuthGuard>
   );
 }
 

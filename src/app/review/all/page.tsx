@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Typography, Button } from "@mui/material";
 import ReviewAllContent from "./ReviewAllContent";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 /**
  * 全頭回顧ビュー画面
@@ -18,28 +19,30 @@ function ReviewAllPage() {
   const from = searchParams.get("from") || "/search";
 
   return (
-    <Box sx={{ px: 2, py: 4 }}>
-      {/* 戻るボタン */}
-      <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
-        <Button variant="outlined" onClick={() => router.push(from)}>
-          戻る
-        </Button>
+    <AuthGuard>
+      <Box sx={{ px: 2, py: 4 }}>
+        {/* 戻るボタン */}
+        <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+          <Button variant="outlined" onClick={() => router.push(from)}>
+            戻る
+          </Button>
+        </Box>
+        {/* タイトル */}
+        <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
+          全頭回顧ビュー
+        </Typography>
+        {/* 説明文 */}
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mb: 2, textAlign: "center", display: "block" }}
+        >
+          👉 横にスワイプして他の馬を見られます
+        </Typography>
+          {/* 選択した馬レース回顧一覧 */}
+          <ReviewAllContent />
       </Box>
-      {/* タイトル */}
-      <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
-        全頭回顧ビュー
-      </Typography>
-      {/* 説明文 */}
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        sx={{ mb: 2, textAlign: "center", display: "block" }}
-      >
-        👉 横にスワイプして他の馬を見られます
-      </Typography>
-        {/* 選択した馬レース回顧一覧 */}
-        <ReviewAllContent />
-    </Box>
+    </AuthGuard>
   );
 }
 

@@ -8,6 +8,7 @@ import { useSnackbar } from "notistack";
 import RaceReviewForm from "@/components/form/RaceReviewForm";
 import { RaceReview } from "@/types/race";
 import { CircularProgress, Box, Typography } from "@mui/material";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 /**
  * レース回顧メモの編集画面
@@ -116,7 +117,9 @@ function EditMemoPage() {
 export default function EditPageWrapper() {
   return (
     <Suspense fallback={<div>読み込み中...</div>}>
-      <EditMemoPage />
+      <AuthGuard>
+        <EditMemoPage />
+      </AuthGuard>
     </Suspense>
   );
 }
