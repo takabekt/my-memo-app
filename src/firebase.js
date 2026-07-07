@@ -1,6 +1,10 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { 
+  initializeFirestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager 
+} from "firebase/firestore";
 
 //Firebaseの設定と準備を一か所にまとめたファイル
 // Firebaseの設定（.env.local から読み込む）
@@ -20,8 +24,16 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 // Googleログインを使うための設定
 const provider = new GoogleAuthProvider();
-// Firestore（データベース）を使うための入り口
-const db = getFirestore(app);
+
+// Firestoreの初期化（オフラインキャッシュを有効化）
+// 電波がない環境でもローカルにデータを保存し、オンライン復帰時に自動同期する設定
+const db = initializeFirestore(app, {
+  // データをブラウザの消えない記憶領域（IndexedDB）に、永続的に保存する設定
+  localCache: persistentLocalCache({
+    // 複数のタブやウィンドウでアプリを同時に開いてもキャッシュを安全に共有する設定
+    tabManager: persistentMultipleTabManager(),
+  }),
+});
 
 // 他のファイルで使えるようにエクスポート
 export { auth, provider, db };
