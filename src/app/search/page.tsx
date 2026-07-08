@@ -60,8 +60,7 @@ function SearchPage() {
   };
   useEffect(() => {
     // firestoreから馬名を取得
-    const fetchHorseData = async () => {
-      const user = auth.currentUser;
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) return;
       // firestoreのraceReviews から馬名の一覧を取得（重複排除）
       const reviewRef = collection(db, "users", user.uid, "raceReviews");
@@ -102,8 +101,9 @@ function SearchPage() {
         };
       });
       setHorses(combinedData);
-    };
-    fetchHorseData();
+    });
+    // 画面を離れた時のクリーンアップ処理
+    return () => unsubscribe();
   }, []);
 
   // 検索フィルター処理
