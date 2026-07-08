@@ -68,6 +68,10 @@ function SearchPage() {
       try {
         // 手元のキャッシュ（IndexedDB）を読みに行く
         reviewSnap = await getDocsFromCache(reviewRef);
+        // 中身が空ならキャッシュ未作成と判断してサーバーへ切り替える
+        if (reviewSnap.empty) {
+          throw new Error("Cache is empty");
+        }
       } catch (e) {
         // キャッシュがない、またはエラーならサーバーに取りに行く
         reviewSnap = await getDocsFromServer(reviewRef);
@@ -80,6 +84,10 @@ function SearchPage() {
       try {
         // 手元のキャッシュ（IndexedDB）を読みに行く
         nextNoteSnap = await getDocsFromCache(nextNoteRef);
+        // 中身が空ならキャッシュ未作成と判断してサーバーへ切り替える
+        if (nextNoteSnap.empty) {
+          throw new Error("Cache is empty");
+        }
       } catch (e) {
         // キャッシュがない、またはエラーならサーバーに取りに行く
         nextNoteSnap = await getDocsFromServer(nextNoteRef);
