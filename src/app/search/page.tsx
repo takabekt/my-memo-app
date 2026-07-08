@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, getDocsFromCache, getDocsFromServer } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -65,12 +65,26 @@ function SearchPage() {
       if (!user) return;
       // firestoreのraceReviews から馬名の一覧を取得（重複排除）
       const reviewRef = collection(db, "users", user.uid, "raceReviews");
-      const reviewSnap = await getDocs(reviewRef);
+      let reviewSnap;
+      try {
+        // 手元のキャッシュ（IndexedDB）を読みに行く
+        reviewSnap = await getDocsFromCache(reviewRef);
+      } catch (e) {
+        // キャッシュがない、またはエラーならサーバーに取りに行く
+        reviewSnap = await getDocsFromServer(reviewRef);
+      }
       const uniqueNames = Array.from(new Set(reviewSnap.docs.map(doc => doc.data().horseName as string)));
 
       // firestoreのnextNotesから全ての馬の詳細データを取得
       const nextNoteRef = collection(db, "users", user.uid, "nextNotes");
-      const nextNoteSnap = await getDocs(nextNoteRef);
+      let nextNoteSnap;
+      try {
+        // 手元のキャッシュ（IndexedDB）を読みに行く
+        nextNoteSnap = await getDocsFromCache(nextNoteRef);
+      } catch (e) {
+        // キャッシュがない、またはエラーならサーバーに取りに行く
+        nextNoteSnap = await getDocsFromServer(nextNoteRef);
+      }
 
       // nextNotesのデータをMap形式にして取り出しやすくする
       const nextNoteMap = new Map();

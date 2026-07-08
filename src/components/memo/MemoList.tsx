@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, getDocsFromCache, getDocsFromServer } from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import Link from "next/link";
 import { Box, Typography, Button } from "@mui/material";
@@ -82,7 +82,14 @@ export default function MemoList({
       // ログインしているユーザーの uid を取得
       const ref = collection(db, "users", user.uid, "raceReviews");
       // Firestore からメモデータを全部取得
-      const snapshot = await getDocs(ref);
+      let snapshot;
+      try {
+        // 手元のキャッシュ（IndexedDB）を読みに行く
+        snapshot = await getDocsFromCache(ref);
+      } catch (e) {
+        // キャッシュがない、またはエラーならサーバーに取りに行く
+        snapshot = await getDocsFromServer(ref);
+      }
       const list: Memo[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<Memo, "id">),
