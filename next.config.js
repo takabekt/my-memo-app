@@ -4,6 +4,8 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   disable: process.env.NODE_ENV === "development", // 開発環境ではPWAのキャッシュを無効化する
   register: true,          // ページロード時にService Workerを自動登録する
   skipWaiting: true,       // 新しいバージョンのアプリがある場合、即座にアップデートを適用する
+  publicExcludes: ["!_next/data/**/*"], // search などの動的なページデータ（Next.jsの内部通信）はPWAのキャッシュ対象から外し、Firebaseから最新データを取ってくる
+  fallbacks: false,
 });
 
 const nextConfig = {
