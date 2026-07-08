@@ -76,8 +76,7 @@ export default function MemoList({
 
   // Firestoreからレース回顧一覧を取得
   useEffect(() => {
-    const fetchData = async () => {
-      const user = auth.currentUser;
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) return;
       // ログインしているユーザーの uid を取得
       const ref = collection(db, "users", user.uid, "raceReviews");
@@ -108,8 +107,9 @@ export default function MemoList({
         : list;
       // 結果をmemosにセット
       setMemos(filtered);
-    };
-    fetchData();
+    });
+    // 画面を離れた時のクリーンアップ
+    return () => unsubscribe();
   }, [filterHorseName]);
 
   // 削除ボタン押下時
