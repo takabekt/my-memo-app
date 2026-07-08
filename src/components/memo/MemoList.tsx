@@ -85,6 +85,10 @@ export default function MemoList({
       try {
         // 手元のキャッシュ（IndexedDB）を読みに行く
         snapshot = await getDocsFromCache(ref);
+        // 中身が空ならキャッシュ未作成と判断してサーバーへ切り替える
+        if (snapshot.empty) {
+          throw new Error("Cache is empty");
+        }
       } catch (e) {
         // キャッシュがない、またはエラーならサーバーに取りに行く
         snapshot = await getDocsFromServer(ref);
