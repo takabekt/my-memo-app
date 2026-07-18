@@ -15,13 +15,22 @@ type HorseInfo = {
   nextHorseNumber: string;
 };
 
+// 親から受け取るエラーの型を定義
+type ReviewAllContentProps = {
+  onError: (error: any) => void;
+};
+
 /**
  * 選択した馬のレース回顧メモコンポーネント
  * 横並びで表示
  *
- * * @component
+ * @component
+ * @param {ReviewAllContentProps} props - コンポーネントのプロップス
+ * @param {Function} props.onError - エラー発生時に親コンポーネントに通知するためのハンドラー関数
  */
-export default function ReviewAllContent() {
+export default function ReviewAllContent({
+   onError 
+}: ReviewAllContentProps) {
   // クエリパラメータから馬名を取得
   const searchParams = useSearchParams();
   const horseQuery = searchParams.get("horses");
@@ -44,20 +53,25 @@ export default function ReviewAllContent() {
   useEffect(() => {
     if (!user) return;
     const fetchAllNextNotes = async () => {
-      const dataPromises = horseNames.map(async (name) => {
-        const ref = doc(db, "users", user.uid, "nextNotes", name);
-        const snap = await getDoc(ref);
-        const data = snap.exists() ? snap.data() : {};
-        return {
-          name,
-          nextHorseNumber: data.nextHorseNumber || "99", // 馬番がない場合は後ろに行くように99を設定
-        };
-      });
+      try {
+        const dataPromises = horseNames.map(async (name) => {
+          const ref = doc(db, "users", user.uid, "nextNotes", name);
+          const snap = await getDoc(ref);
+          const data = snap.exists() ? snap.data() : {};
+          return {
+            name,
+            nextHorseNumber: data.nextHorseNumber || "99", // 馬番がない場合は後ろに行くように99を設定
+          };
+        });
       const results = await Promise.all(dataPromises);
       setHorseDataList(results);
+      } catch (error) {
+        // オフラインの場合は親に通知
+        onError(error);
+      }
     };
     fetchAllNextNotes();
-  }, [user, horseNames]);
+  }, [user, horseNames, onError]);
 
   // useMemoでソートを実行
   const sortedHorses = useMemo(() => {
@@ -127,6 +141,7 @@ export default function ReviewAllContent() {
             filterHorseName={horse.name}
             showActions={false} // メモの編集・削除ボタンを非表示
             editableNextNote={false} // 次走メモの編集・削除ボタンを非表示
+            onError={onError}
           />
         </Paper>
       ))}

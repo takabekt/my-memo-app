@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Box, Typography, Button } from "@mui/material";
 import ReviewAllContent from "./ReviewAllContent";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { OfflineError } from "@/components/ui/OfflineError";
 
 /**
  * 全頭回顧ビュー画面
@@ -17,6 +18,19 @@ function ReviewAllPage() {
   const searchParams = useSearchParams();
   // 遷移元画面から渡された戻り先を取得。なければ検索画面に遷移
   const from = searchParams.get("from") || "/search";
+
+    // エラー状態を管理
+    const [isOffline, setIsOffline] = useState(false);
+    // オフラインエラーが発生したときに呼ばれる関数
+    const handleOfflineError = (error: any) => {
+      // エラー状態をオフラインに設定
+      setIsOffline(true);
+    };
+  
+    // オフラインエラーが発生した場合は、オフラインエラー画面を表示
+    if (isOffline) {
+      return <OfflineError />;
+    }
 
   return (
     <AuthGuard>
@@ -40,7 +54,7 @@ function ReviewAllPage() {
           👉 横にスワイプして他の馬を見られます
         </Typography>
           {/* 選択した馬レース回顧一覧 */}
-          <ReviewAllContent />
+          <ReviewAllContent onError={handleOfflineError}/>
       </Box>
     </AuthGuard>
   );
