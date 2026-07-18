@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc, getDocsFromCache, getDocsFromServer } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, getDocsFromCache, getDocsFromServer, disableNetwork, enableNetwork} from "firebase/firestore";
 import { db, auth } from "@/firebase";
 import Link from "next/link";
 import { Box, Typography, Button } from "@mui/material";
@@ -46,6 +46,15 @@ const getPaceBadge = (pace: string) => {
     default: return { label: "不明", color: "#757575", bg: "#f5f5f5" };
   }
 };
+// サーバーからの取得がオフラインで保留状態になるのを防ぐためのタイムアウト関数(3秒)
+const getDocsFromServerWithTimeout = (ref: any, timeoutMs = 3000) => {
+  return Promise.race([
+    getDocsFromServer(ref),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Firestore connection timeout")), timeoutMs)
+    ),
+  ]);
+};
 
 /**
  * 対象の馬のレース回顧メモを一覧表示するコンポーネント。
@@ -60,10 +69,12 @@ export default function MemoList({
   filterHorseName,
   showActions = true,
   editableNextNote = false,
+  onError,
 }: {
   filterHorseName: string;
   showActions?: boolean;
   editableNextNote?: boolean;
+  onError?: (error: any) => void;
 }) {
   // 表示するメモの一覧を管理
   const [memos, setMemos] = useState<Memo[]>([]);
@@ -73,11 +84,16 @@ export default function MemoList({
   const [confirmOpen, setConfirmOpen] = useState(false);
   // どのメモを削除しようとしているかを一時的に保存する
   const [targetId, setTargetId] = useState<string | null>(null);
+  // 読み込み中の表示管理
+  const [loading, setLoading] = useState(true);
 
   // Firestoreからレース回顧一覧を取得
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (!user) return;
+      if (!user) {
+        setLoading(false); 
+        return;
+      }
       // ログインしているユーザーの uid を取得
       const ref = collection(db, "users", user.uid, "raceReviews");
       // Firestore からメモデータを全部取得
@@ -90,9 +106,31 @@ export default function MemoList({
           throw new Error("Cache is empty");
         }
       } catch (e) {
-        // キャッシュがない、またはエラーならサーバーに取りに行く
-        snapshot = await getDocsFromServer(ref);
+        // キャッシュがない、またはキャッシュ取得エラーならサーバーに取りに行く
+        try {
+          // ブラウザ自体がオフラインならエラーを即座に実施
+          if (typeof window !== "undefined" && !navigator.onLine) {
+            throw new Error("Network offline");
+          }
+          // 3秒経ってもサーバーから応答がない場合はタイムアウト
+          snapshot =await getDocsFromServerWithTimeout(ref, 3000);
+        } catch (serverError: any) {
+          // サーバーからのデータ取得エラーになった場合
+          console.error("Firestoreサーバーからの取得に失敗しました:", serverError);
+          setLoading(false);
+          if (onError) {
+            onError(serverError); // 親コンポーネントにエラーを通知
+          }
+          return; 
+        } finally {
+          // ネットワークを遮断した場合は、後続の処理のために裏で接続状態を戻しておく
+          if (!navigator.onLine) {
+            enableNetwork(db).catch(() => {});
+          }
+        }
       }
+      // 取得に失敗してsnapshotが無い場合は、以降の処理を実行しない
+      if (!snapshot) return;
       const list: Memo[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<Memo, "id">),
@@ -111,6 +149,7 @@ export default function MemoList({
         : list;
       // 結果をmemosにセット
       setMemos(filtered);
+      setLoading(false);
     });
     // 画面を離れた時のクリーンアップ
     return () => unsubscribe();
@@ -180,11 +219,13 @@ export default function MemoList({
         <NextNoteBlock 
           userId={user.uid} 
           // filterHorseName が空や不一致でも、リストにある本物の馬名を使う
-          horseName={filterHorseName || memos[0].horseName} 
+           horseName={filterHorseName || memos[0].horseName} 
           editable={editableNextNote} 
-        />
+         />
       )}
-      {memos.length === 0 ? (
+      {loading ? (
+         <Typography color="text.secondary">読み込み中...</Typography>
+      ) : memos.length === 0 ? (
         <Typography color="text.secondary">
           {filterHorseName
             ? `${filterHorseName} のメモはまだありません。`

@@ -4,7 +4,8 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Box, Button, Typography } from "@mui/material";
 import MemoList from "@/components/memo/MemoList";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
+import { OfflineError} from "@/components/ui/OfflineError";
 
 /**
  * レース回顧一覧画面
@@ -21,6 +22,19 @@ function HorseMemoPage() {
   // 戻るボタンを押下した際に、遷移元に戻るためにクエリパラメータを取得
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
+
+  // エラー状態を管理
+  const [isOffline, setIsOffline] = useState(false);
+  // オフラインエラーが発生したときに呼ばれる関数
+  const handleOfflineError = (error: any) => {
+    // エラー状態をオフラインに設定
+    setIsOffline(true);
+  };
+
+  // オフラインエラーが発生した場合は、オフラインエラー画面を表示
+  if (isOffline) {
+    return <OfflineError />;
+  }
   return (
     <AuthGuard>
       <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
@@ -72,6 +86,7 @@ function HorseMemoPage() {
           filterHorseName={decodedHorseName}
           showActions={true} // メモの編集・削除ボタンを表示
           editableNextNote={true} // 次走メモの編集・削除ボタン表示
+          onError={handleOfflineError}
         />
       </Box>
     </AuthGuard>

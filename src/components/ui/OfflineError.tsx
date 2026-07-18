@@ -3,8 +3,20 @@ import { Box, Button, Typography, Container } from '@mui/material';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import ReplayIcon from '@mui/icons-material/Replay';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useRouter } from 'next/router';
-export const OfflineErrorView: React.FC = () => {
+import { useRouter } from 'next/navigation';
+
+/**
+ * ネットワーク切断・通信タイムアウト時のエラー画面コンポーネント
+ * 
+ * データの取得がオフラインによって失敗した場合の表示画面
+ * 
+ * 主な機能：
+ * 1. ページのリロードによる再試行
+ * 2. 検索画面への遷移
+ * 
+ * @component
+ */
+export const OfflineError: React.FC = () => {
   const router = useRouter();
 
   // もう一度読み込む（リロード）
